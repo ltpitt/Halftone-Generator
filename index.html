@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Halftone Generator - Create Print Effects Online</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Halftone Generator</h1>
+            <p>Create stunning halftone print effects with customizable options</p>
+        </header>
+
+        <div class="main-content">
+            <div class="controls-panel">
+                <div class="control-section">
+                    <h2>Image Upload</h2>
+                    <input type="file" id="imageUpload" accept="image/*">
+                    <button id="resetBtn" class="secondary-btn">Reset Image</button>
+                </div>
+
+                <div class="control-section">
+                    <h2>Pattern Type</h2>
+                    <select id="patternType">
+                        <option value="circle">Circular Dots</option>
+                        <option value="square">Square Dots</option>
+                        <option value="line">Lines</option>
+                        <option value="cross">Cross Hatch</option>
+                    </select>
+                </div>
+
+                <div class="control-section">
+                    <h2>Dot Size</h2>
+                    <input type="range" id="dotSize" min="2" max="30" value="8" step="1">
+                    <span id="dotSizeValue">8</span>
+                </div>
+
+                <div class="control-section">
+                    <h2>Contrast</h2>
+                    <input type="range" id="contrast" min="0" max="200" value="100" step="1">
+                    <span id="contrastValue">100</span>
+                </div>
+
+                <div class="control-section">
+                    <h2>Angle (degrees)</h2>
+                    <input type="range" id="angle" min="0" max="360" value="45" step="1">
+                    <span id="angleValue">45</span>
+                </div>
+
+                <div class="control-section">
+                    <h2>Brightness</h2>
+                    <input type="range" id="brightness" min="-100" max="100" value="0" step="1">
+                    <span id="brightnessValue">0</span>
+                </div>
+
+                <div class="control-section">
+                    <h2>Sharpness</h2>
+                    <input type="range" id="sharpness" min="0" max="100" value="50" step="1">
+                    <span id="sharpnessValue">50</span>
+                </div>
+
+                <div class="control-section">
+                    <button id="generateBtn" class="primary-btn">Generate Halftone</button>
+                    <button id="downloadBtn" class="primary-btn">Download Image</button>
+                </div>
+            </div>
+
+            <div class="canvas-panel">
+                <div class="canvas-container">
+                    <canvas id="originalCanvas"></canvas>
+                    <p class="canvas-label">Original Image</p>
+                </div>
+                <div class="canvas-container">
+                    <canvas id="halftoneCanvas"></canvas>
+                    <p class="canvas-label">Halftone Result</p>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Upload an image and adjust the parameters to create your halftone effect</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
