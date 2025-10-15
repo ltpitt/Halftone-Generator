@@ -1,41 +1,35 @@
-# Halftone-Generator
+# Adobe Illustrator Halftone Plugin
 
-An online halftone print effect generator with extensive customization options, similar to Vectoraster.
+## Goal
 
-## Features
+The primary goal of this project is to create an Adobe Illustrator plugin that replicates the functionality of a web-based halftone generator. The plugin should allow a user to select an image or vector object within Illustrator and apply a configurable vector-based halftone effect to it.
 
-- **Multiple Pattern Types**: Circular dots, square dots, lines, and cross-hatch patterns
-- **Adjustable Parameters**:
-  - Dot Size: Control the size of halftone dots (2-30px)
-  - Contrast: Adjust image contrast (0-200%)
-  - Angle: Rotate the halftone pattern (0-360°)
-  - Brightness: Adjust image brightness (-100 to +100)
-  - Sharpness: Control dot definition (0-100%)
-- **Real-time Preview**: See original and halftone images side by side
-- **Download**: Export your halftone image as PNG
+## Core Functionality to Implement
 
-## Usage
+The plugin's UI and logic should be based on the features from the `Halftone-Generator_OLD` project.
 
-1. Open `index.html` in a web browser
-2. Click "Choose File" to upload an image (JPG, PNG, etc.)
-3. Adjust the parameters using the controls:
-   - Select a pattern type from the dropdown
-   - Use sliders to adjust dot size, contrast, angle, brightness, and sharpness
-4. Click "Generate Halftone" to create the effect (or it will auto-generate as you adjust parameters)
-5. Click "Download Image" to save your halftone image
+### UI Controls:
+- **Source Selection**: A way to target the selected object(s) in Illustrator.
+- **Pattern Type**: Radio buttons or a dropdown for: Circle, Square, Diamond, Line, Cross, Hexagon.
+- **Dot Parameters**:
+    - **Size**: Slider to control the maximum size of the pattern elements.
+    - **Spacing**: Slider to control the grid spacing between elements.
+    - **Density**: Slider to control the overall effect intensity.
+- **Transformation**:
+    - **Angle**: Slider to rotate the halftone grid.
+    - **Scale X / Scale Y**: Sliders to stretch the pattern elements.
+- **Image Adjustments**:
+    - **Contrast, Brightness, Gamma, Threshold**: Sliders to preprocess the source image data.
+- **Advanced Options**:
+    - **Blur, Noise**: Sliders for advanced effects.
+    - **Invert**: A checkbox to invert the relationship between brightness and dot size.
+- **Actions**:
+    - A "Generate" button to create the vector halftone pattern.
+    - A "Reset" button to clear the settings.
 
-## How It Works
+## Technical Requirements
 
-The halftone generator converts your image into a pattern of dots, squares, lines, or crosses. The size and density of these shapes vary based on the brightness of the original image, creating the classic halftone print effect used in newspapers, comics, and pop art.
-
-## Browser Compatibility
-
-Works in all modern browsers that support HTML5 Canvas:
-- Chrome
-- Firefox
-- Safari
-- Edge
-
-## Live Demo
-
-Simply open `index.html` in your browser to start using the halftone generator.
+- The plugin must be built using the Adobe CEP framework (HTML, CSS, JavaScript).
+- The output must be **vector shapes** (e.g., paths, compound paths) in the active Illustrator document, not a raster image.
+- The plugin needs to read pixel data from a selected raster image or rasterize a selected vector object to get the brightness values needed for the halftone calculation.
+- The ExtendScript part (`.jsx`) will handle the Illustrator-specific logic, such as creating shapes, while the HTML/JS part will manage the UI panel.
