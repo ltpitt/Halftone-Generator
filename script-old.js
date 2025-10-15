@@ -3,7 +3,7 @@
 
 // Canvas elements
 const halftoneCanvas = document.getElementById('halftoneCanvas');
-const halftoneCtx = halftoneCanvas ? halftoneCanvas.getContext('2d') : null;
+const halftoneCtx = halftoneCanvas.getContext('2d');
 
 // Control elements
 const imageUpload = document.getElementById('imageUpload');
@@ -56,8 +56,6 @@ let originalImageData = null;
 
 // Initialize the application
 function init() {
-    console.log('Initializing Halftone Generator...');
-    
     // Hide canvas overlay initially
     if (canvasOverlay) {
         canvasOverlay.style.display = 'flex';
@@ -69,7 +67,7 @@ function init() {
     // Setup drag and drop
     setupDragAndDrop();
     
-    console.log('Halftone Generator initialized successfully');
+    console.log('Halftone Generator initialized');
 }
 
 // Setup all event listeners
@@ -211,8 +209,6 @@ function handleFileSelect(e) {
 
 // Process the selected image file
 function processImageFile(file) {
-    console.log('Processing image file:', file.name);
-    
     const reader = new FileReader();
     
     reader.onload = (event) => {
@@ -227,18 +223,14 @@ function processImageFile(file) {
             if (canvasOverlay) {
                 canvasOverlay.style.display = 'none';
             }
-            
-            console.log('Image loaded successfully:', img.width + 'x' + img.height);
         };
         img.onerror = () => {
-            console.error('Error loading image');
             alert('Error loading image. Please try a different file.');
         };
         img.src = event.target.result;
     };
     
     reader.onerror = () => {
-        console.error('Error reading file');
         alert('Error reading file. Please try again.');
     };
     
@@ -247,7 +239,7 @@ function processImageFile(file) {
 
 // Setup canvas with proper dimensions
 function setupCanvas(img) {
-    if (!halftoneCanvas || !halftoneCtx) return;
+    if (!halftoneCanvas) return;
     
     // Calculate canvas size maintaining aspect ratio
     const maxWidth = 2000;
@@ -267,10 +259,6 @@ function setupCanvas(img) {
     
     halftoneCanvas.width = width;
     halftoneCanvas.height = height;
-    
-    console.log(`Canvas setup: ${width}x${height}`);
-}
-
 // Update output information display
 function updateOutputInfo(img) {
     if (outputDimensions) {
@@ -280,8 +268,6 @@ function updateOutputInfo(img) {
 
 // Reset everything
 function resetAll() {
-    console.log('Resetting application');
-    
     currentImage = null;
     originalImageData = null;
     
@@ -289,7 +275,7 @@ function resetAll() {
         imageUpload.value = '';
     }
     
-    if (halftoneCanvas && halftoneCtx) {
+    if (halftoneCanvas) {
         halftoneCtx.clearRect(0, 0, halftoneCanvas.width, halftoneCanvas.height);
         halftoneCanvas.width = 0;
         halftoneCanvas.height = 0;
@@ -316,14 +302,14 @@ function getCurrentPattern() {
 
 // Generate halftone effect
 function generateHalftone() {
-    if (!currentImage || !halftoneCanvas || !halftoneCtx) {
+    if (!currentImage || !halftoneCanvas) {
         console.warn('No image or canvas available');
         return;
     }
     
     console.log('Generating halftone...');
     
-    // Get current parameter values with fallbacks
+    // Get current parameter values
     const params = {
         dotSize: dotSize ? parseFloat(dotSize.value) : 8,
         spacing: spacing ? parseFloat(spacing.value) : 1.2,
@@ -345,11 +331,11 @@ function generateHalftone() {
         // Clear canvas
         halftoneCtx.clearRect(0, 0, halftoneCanvas.width, halftoneCanvas.height);
         
-        // Set background
+        // Set white background
         halftoneCtx.fillStyle = params.invert ? '#000000' : '#ffffff';
         halftoneCtx.fillRect(0, 0, halftoneCanvas.width, halftoneCanvas.height);
         
-        // Create temporary canvas for image processing
+        // Draw original image to get pixel data
         const tempCanvas = document.createElement('canvas');
         const tempCtx = tempCanvas.getContext('2d');
         tempCanvas.width = halftoneCanvas.width;
@@ -517,7 +503,6 @@ function downloadPNG() {
         link.download = `halftone-${Date.now()}.png`;
         link.href = halftoneCanvas.toDataURL('image/png');
         link.click();
-        console.log('PNG download initiated');
     } catch (error) {
         console.error('Error downloading PNG:', error);
         alert('Error downloading image. Please try again.');
@@ -532,6 +517,7 @@ function downloadSVG() {
     }
     
     try {
+        // Create SVG representation
         const params = {
             dotSize: dotSize ? parseFloat(dotSize.value) : 8,
             spacing: spacing ? parseFloat(spacing.value) : 1.2,
@@ -549,7 +535,6 @@ function downloadSVG() {
         link.click();
         
         URL.revokeObjectURL(url);
-        console.log('SVG download initiated');
     } catch (error) {
         console.error('Error downloading SVG:', error);
         alert('Error downloading SVG. Please try again.');
@@ -578,6 +563,120 @@ function createSVGHalftone(params) {
     return svg;
 }
 
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', init);
+
+console.log('Halftone Generator script loaded');
+
+// Display original image
+function displayOriginalImage() {
+    const maxSize = 500;
+    let width = currentImage.width;
+    let height = currentImage.height;
+    
+    // Scale down if too large
+    if (width > maxSize || height > maxSize) {
+        const ratio = Math.min(maxSize / width, maxSize / height);
+        width *= ratio;
+        height *= ratio;
+    }
+    
+    originalCanvas.width = width;
+    originalCanvas.height = height;
+    originalCtx.drawImage(currentImage, 0, 0, width, height);
+}
+
+// Apply brightness and contrast adjustments
+function applyImageAdjustments(imageData) {
+    const data = imageData.data;
+    const contrastFactor = (parseFloat(contrast.value) / 100);
+    const brightnessFactor = parseInt(brightness.value);
+    
+    for (let i = 0; i < data.length; i += 4) {
+        // Apply contrast
+        data[i] = ((data[i] - 128) * contrastFactor) + 128;
+        data[i + 1] = ((data[i + 1] - 128) * contrastFactor) + 128;
+        data[i + 2] = ((data[i + 2] - 128) * contrastFactor) + 128;
+        
+        // Apply brightness
+        data[i] += brightnessFactor;
+        data[i + 1] += brightnessFactor;
+        data[i + 2] += brightnessFactor;
+        
+        // Clamp values
+        data[i] = Math.max(0, Math.min(255, data[i]));
+        data[i + 1] = Math.max(0, Math.min(255, data[i + 1]));
+        data[i + 2] = Math.max(0, Math.min(255, data[i + 2]));
+    }
+    
+    return imageData;
+}
+
+// Convert to grayscale
+function toGrayscale(imageData) {
+    const data = imageData.data;
+    for (let i = 0; i < data.length; i += 4) {
+        const gray = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+        data[i] = gray;
+        data[i + 1] = gray;
+        data[i + 2] = gray;
+    }
+    return imageData;
+}
+
+// Generate halftone effect
+function generateHalftone() {
+    if (!currentImage) return;
+    
+    const width = originalCanvas.width;
+    const height = originalCanvas.height;
+    
+    halftoneCanvas.width = width;
+    halftoneCanvas.height = height;
+    
+    // Get original image data
+    let imageData = originalCtx.getImageData(0, 0, width, height);
+    
+    // Apply adjustments
+    imageData = applyImageAdjustments(imageData);
+    
+    // Convert to grayscale
+    imageData = toGrayscale(imageData);
+    
+    const data = imageData.data;
+    
+    // Clear halftone canvas
+    halftoneCtx.fillStyle = 'white';
+    halftoneCtx.fillRect(0, 0, width, height);
+    
+    const size = parseInt(dotSize.value);
+    const pattern = patternType.value;
+    const rotationAngle = (parseFloat(angle.value) * Math.PI) / 180;
+    const sharp = parseFloat(sharpness.value) / 100;
+    
+    halftoneCtx.fillStyle = 'black';
+    
+    // Create halftone pattern
+    for (let y = 0; y < height; y += size) {
+        for (let x = 0; x < width; x += size) {
+            // Sample the center of each cell
+            const sampleX = Math.min(x + Math.floor(size / 2), width - 1);
+            const sampleY = Math.min(y + Math.floor(size / 2), height - 1);
+            const index = (sampleY * width + sampleX) * 4;
+            
+            // Get brightness (0-255, where 0 is black and 255 is white)
+            const brightness = data[index];
+            
+            // Calculate dot radius based on brightness (inverted - darker = larger dots)
+            const normalizedBrightness = brightness / 255;
+            const dotRadius = (size / 2) * (1 - normalizedBrightness) * sharp;
+            
+            if (dotRadius > 0.5) {
+                halftoneCtx.save();
+                
+                // Calculate center of the cell
+                const centerX = x + size / 2;
+                const centerY = y + size / 2;
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', init);
 
