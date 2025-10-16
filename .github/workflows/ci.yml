@@ -1,0 +1,110 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [ main, master ]
+  push:
+    branches: [ main, master ]
+
+jobs:
+  validate-structure:
+    name: Validate Plugin Structure
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: 'illustrator-plugin/package-lock.json'
+      
+      - name: Install dependencies
+        working-directory: ./illustrator-plugin
+        run: npm ci
+      
+      - name: Validate manifest
+        working-directory: ./illustrator-plugin
+        run: npm run validate:manifest
+      
+      - name: Validate structure
+        working-directory: ./illustrator-plugin
+        run: npm run validate:structure
+
+  test-demo-mode:
+    name: Test Demo Mode
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: 'illustrator-plugin/package-lock.json'
+      
+      - name: Install dependencies
+        working-directory: ./illustrator-plugin
+        run: npm ci
+      
+      - name: Run demo mode tests
+        working-directory: ./illustrator-plugin
+        run: npm run test:demo
+
+  e2e-tests:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: 'illustrator-plugin/package-lock.json'
+      
+      - name: Install dependencies
+        working-directory: ./illustrator-plugin
+        run: npm ci
+      
+      - name: Install Playwright Browsers
+        working-directory: ./illustrator-plugin
+        run: npx playwright install --with-deps chromium
+      
+      - name: Run E2E tests
+        working-directory: ./illustrator-plugin
+        run: npm run test:e2e
+      
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: illustrator-plugin/test-results/
+          retention-days: 30
+
+  all-tests-passed:
+    name: All Tests Passed
+    runs-on: ubuntu-latest
+    needs: [validate-structure, test-demo-mode, e2e-tests]
+    if: always()
+    
+    steps:
+      - name: Check if all jobs succeeded
+        run: |
+          if [ "${{ needs.validate-structure.result }}" != "success" ] || \
+             [ "${{ needs.test-demo-mode.result }}" != "success" ] || \
+             [ "${{ needs.e2e-tests.result }}" != "success" ]; then
+            echo "One or more test jobs failed"
+            exit 1
+          fi
+          echo "All tests passed successfully!"
