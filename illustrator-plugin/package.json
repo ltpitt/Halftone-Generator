@@ -1,0 +1,22 @@
+{
+  "name": "halftone-generator-illustrator-plugin",
+  "version": "1.0.0",
+  "description": "Adobe Illustrator plugin for generating vector halftone patterns",
+  "main": "client/index.html",
+  "scripts": {
+    "validate": "npm run validate:manifest && npm run validate:structure",
+    "validate:manifest": "echo 'Validating manifest.xml...' && xmllint --noout CSXS/manifest.xml || echo 'xmllint not available, skipping XML validation'",
+    "validate:structure": "node scripts/validate-structure.js"
+  },
+  "keywords": [
+    "adobe",
+    "illustrator",
+    "cep",
+    "halftone",
+    "plugin",
+    "extension"
+  ],
+  "author": "Halftone Generator Team",
+  "license": "MIT",
+  "devDependencies": {}
+}
