@@ -43,33 +43,65 @@ This document outlines the complete migration plan for converting the web-based 
 
 ## Major Phases
 
+### CEP Version Targets
+
+Based on [Adobe CEP Getting Started guides](https://github.com/Adobe-CEP/Getting-Started-guides), the plugin will target:
+
+| CEP Version | Illustrator Version | Release Year |
+|-------------|---------------------|--------------|
+| CEP 9       | CC 2019 (23.x)      | 2018         |
+| CEP 10      | 2020 (24.x)         | 2019         |
+| CEP 11      | 2021 (25.x)         | 2020         |
+| CEP 11      | 2022 (26.x)         | 2021         |
+
+**Target**: CEP 9 minimum for broad compatibility, with testing on CEP 11 for latest features.
+
+---
+
 ### Phase 1: Foundation and Setup (Week 1-2)
 **Goal**: Establish development environment and basic plugin structure
 
+**Reference**: [Adobe CEP Getting Started guides](https://github.com/Adobe-CEP/Getting-Started-guides)
+
 #### Tasks
 1. **Development Environment**
-   - [ ] Install Adobe Illustrator (latest version)
-   - [ ] Set up Node.js build environment
-   - [ ] Install ZXP packager tools
-   - [ ] Configure CEP debugging tools
+   - [ ] Install Adobe Illustrator (CC 2019 or later)
+   - [ ] Set up Node.js 12+ for build tools
+   - [ ] Install ZXP Sign Tool for packaging
+   - [ ] Enable CEP debugging (PlayerDebugMode registry/plist setting)
    - [ ] Set up version control for plugin directory
+   - [ ] Configure Chrome DevTools for debugging
 
-2. **Plugin Structure**
-   - [ ] Create CEP manifest file (CSXS/manifest.xml)
-   - [ ] Set up basic HTML panel structure
-   - [ ] Integrate CSInterface.js library
-   - [ ] Create ExtendScript host file (index.jsx)
-   - [ ] Establish communication bridge between UI and host
+2. **Plugin Structure** (Following CEP Standards)
+   - [ ] Create extension folder in CEP extensions directory
+   - [ ] Create CSXS/manifest.xml with proper bundle configuration
+   - [ ] Set up HTML panel structure (client/index.html)
+   - [ ] Download and integrate CSInterface.js from Adobe CEP Resources
+   - [ ] Create ExtendScript host file (host/index.jsx)
+   - [ ] Establish JSX interface for panel-to-host communication
+   - [ ] Create .debug file for development mode
 
 3. **Development Workflow**
-   - [ ] Create debug configuration (.debug file)
-   - [ ] Set up hot reload for development
-   - [ ] Configure build scripts
-   - [ ] Establish testing procedures
+   - [ ] Configure CEP debug ports (default: 8000-8999)
+   - [ ] Set up Chrome DevTools remote debugging
+   - [ ] Create npm scripts for build automation
+   - [ ] Establish hot reload workflow using file watchers
+   - [ ] Create logging infrastructure for both UI and ExtendScript
+
+**Key Files to Create** (per Adobe CEP standards):
+```
+CSXS/manifest.xml         - Extension manifest with host app versions
+.debug                    - Debug configuration for development
+client/index.html         - Panel UI entry point
+client/CSInterface.js     - Adobe's CEP interface library
+host/index.jsx            - ExtendScript host script
+icons/                    - Panel icons (normal, hover, dark themes)
+```
 
 **Deliverables**:
 - Working plugin skeleton that loads in Illustrator
-- Basic "Hello World" functionality
+- Basic "Hello World" with UI-to-ExtendScript communication
+- Debug configuration working with Chrome DevTools
 - Development documentation
 
 ---
@@ -556,12 +588,309 @@ Start with realistic timeline (13 weeks), re-evaluate after Phase 2 completion. 
 - **ExtendScript**: JavaScript variant for Adobe applications scripting
 - **ZXP**: Package format for distributing CEP extensions
 - **JSX**: ExtendScript file extension
+- **CSInterface**: JavaScript library for CEP panel-to-host communication
+
+### CEP Extension Structure (Adobe Standard)
+
+Based on [Adobe CEP Getting Started guides](https://github.com/Adobe-CEP/Getting-Started-guides), a CEP extension follows this structure:
+
+```
+HalftoneGenerator/                          # Extension root
+├── CSXS/
+│   └── manifest.xml                        # Extension manifest (required)
+├── .debug                                  # Debug configuration (development only)
+├── client/                                 # Panel UI layer
+│   ├── index.html                          # Main panel HTML
+│   ├── style.css                           # Panel styles
+│   ├── script.js                           # Panel logic
+│   ├── lib/
+│   │   └── CSInterface.js                  # Adobe's CEP library
+│   └── thirdparty/                         # Any third-party libraries
+├── host/                                   # ExtendScript layer
+│   ├── index.jsx                           # Main host script
+│   └── lib/                                # Utility libraries
+│       ├── halftone-engine.jsx             # Halftone generation logic
+│       ├── image-processor.jsx             # Image data processing
+│       └── shape-generator.jsx             # Vector shape creation
+└── icons/                                  # Extension icons
+    ├── icon-normal.png                     # 23x23 or 46x46 (HiDPI)
+    ├── icon-hover.png
+    ├── icon-disabled.png
+    └── icon-dark.png                       # For dark UI themes
+```
+
+### Example manifest.xml (Adobe CEP Standard)
+
+```xml
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ExtensionManifest xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+                   ExtensionBundleId="com.halftone.generator" 
+                   ExtensionBundleVersion="1.0.0" 
+                   Version="9.0">
+  
+  <ExtensionList>
+    <Extension Id="com.halftone.generator.panel" Version="1.0.0"/>
+  </ExtensionList>
+  
+  <ExecutionEnvironment>
+    <HostList>
+      <!-- Illustrator CC 2019 and later -->
+      <Host Name="ILST" Version="[23.0,99.9]"/>
+    </HostList>
+    
+    <LocaleList>
+      <Locale Code="All"/>
+    </LocaleList>
+    
+    <RequiredRuntimeList>
+      <RequiredRuntime Name="CSXS" Version="9.0"/>
+    </RequiredRuntimeList>
+  </ExecutionEnvironment>
+  
+  <DispatchInfoList>
+    <Extension Id="com.halftone.generator.panel">
+      <DispatchInfo>
+        <Resources>
+          <MainPath>./client/index.html</MainPath>
+          <ScriptPath>./host/index.jsx</ScriptPath>
+          <CEFCommandLine/>
+        </Resources>
+        
+        <Lifecycle>
+          <AutoVisible>true</AutoVisible>
+        </Lifecycle>
+        
+        <UI>
+          <Type>Panel</Type>
+          <Menu>Halftone Generator</Menu>
+          <Geometry>
+            <Size>
+              <Height>600</Height>
+              <Width>320</Width>
+            </Size>
+            <MinSize>
+              <Height>400</Height>
+              <Width>280</Width>
+            </MinSize>
+            <MaxSize>
+              <Height>800</Height>
+              <Width>400</Width>
+            </MaxSize>
+          </Geometry>
+          <Icons>
+            <Icon Type="Normal">./icons/icon-normal.png</Icon>
+            <Icon Type="RollOver">./icons/icon-hover.png</Icon>
+            <Icon Type="Disabled">./icons/icon-disabled.png</Icon>
+            <Icon Type="DarkNormal">./icons/icon-dark.png</Icon>
+          </Icons>
+        </UI>
+      </DispatchInfo>
+    </Extension>
+  </DispatchInfoList>
+</ExtensionManifest>
+```
+
+### Example .debug File (Development)
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<ExtensionList>
+  <Extension Id="com.halftone.generator.panel">
+    <HostList>
+      <Host Name="ILST" Port="8088"/>
+    </HostList>
+  </Extension>
+</ExtensionList>
+```
+
+### CEP Panel to ExtendScript Communication Pattern
+
+**In client/script.js (Panel side):**
+```javascript
+// Using CSInterface.js from Adobe CEP Resources
+var csInterface = new CSInterface();
+
+// Call ExtendScript function
+function generateHalftone(params) {
+  var paramsJSON = JSON.stringify(params);
+  
+  // evalScript communicates with host ExtendScript
+  csInterface.evalScript('generateHalftone(' + paramsJSON + ')', function(result) {
+    if (result === 'EvalScript error.') {
+      console.error('ExtendScript execution failed');
+      return;
+    }
+    
+    var resultData = JSON.parse(result);
+    console.log('Halftone generated:', resultData);
+    updateUI(resultData);
+  });
+}
+
+// Listen for events from ExtendScript
+csInterface.addEventListener('halftone.progress', function(event) {
+  var progress = JSON.parse(event.data);
+  updateProgressBar(progress.percent);
+});
+```
+
+**In host/index.jsx (ExtendScript side):**
+```javascript
+// ExtendScript function called from panel
+function generateHalftone(paramsJSON) {
+  try {
+    var params = JSON.parse(paramsJSON);
+    
+    // Illustrator API calls
+    var doc = app.activeDocument;
+    var selection = doc.selection;
+    
+    if (selection.length === 0) {
+      return JSON.stringify({success: false, error: 'No selection'});
+    }
+    
+    // Generate halftone pattern
+    var result = createHalftonePattern(selection[0], params);
+    
+    // Send progress events back to panel
+    var event = new CSXSEvent();
+    event.type = 'halftone.progress';
+    event.data = JSON.stringify({percent: 100, complete: true});
+    event.dispatch();
+    
+    return JSON.stringify({success: true, shapesCreated: result.count});
+    
+  } catch (error) {
+    return JSON.stringify({success: false, error: error.toString()});
+  }
+}
+
+// Helper function for halftone generation
+function createHalftonePattern(targetObject, params) {
+  // Implementation details here
+  // This is where web Canvas logic gets translated to Illustrator paths
+}
+```
+
+### Enabling CEP Debug Mode
+
+**On macOS:**
+```bash
+# Enable debug mode
+defaults write com.adobe.CSXS.9 PlayerDebugMode 1
+
+# Set log level (0-6, 6 is most verbose)
+defaults write com.adobe.CSXS.9 LogLevel 6
+
+# Restart Illustrator
+```
+
+**On Windows:**
+```powershell
+# Create registry key (run as Administrator)
+# For CEP 9
+New-Item -Path "HKEY_CURRENT_USER\Software\Adobe\CSXS.9" -Force
+Set-ItemProperty -Path "HKEY_CURRENT_USER\Software\Adobe\CSXS.9" -Name "PlayerDebugMode" -Value "1"
+Set-ItemProperty -Path "HKEY_CURRENT_USER\Software\Adobe\CSXS.9" -Name "LogLevel" -Value "6"
+
+# Restart Illustrator
+```
+
+**Debug with Chrome DevTools:**
+1. Enable debug mode (above)
+2. Load extension in Illustrator
+3. Open Chrome/Edge browser
+4. Navigate to: `http://localhost:8088` (port from .debug file)
+5. Use full DevTools for debugging panel JavaScript
+
+### Building and Packaging
+
+**Development Installation:**
+```bash
+# macOS: Copy to CEP extensions folder
+cp -r HalftoneGenerator ~/Library/Application\ Support/Adobe/CEP/extensions/
+
+# Windows: Copy to CEP extensions folder
+# C:\Users\<username>\AppData\Roaming\Adobe\CEP\extensions\
+```
+
+**Production Packaging:**
+```bash
+# Using ZXPSignCmd tool from Adobe
+ZXPSignCmd -sign HalftoneGenerator/ HalftoneGenerator.zxp certificate.p12 password -tsa http://timestamp.digicert.com
+
+# Self-signed certificate for testing (creates certificate.p12)
+ZXPSignCmd -selfSignedCert US CA MyCompany MyCommonName password certificate.p12
+```
+
+**Installation:**
+- ZXP files can be installed via Adobe Extension Manager (deprecated) or third-party installers
+- For testing: ExMan Command Line Tool or Anastasiy's Extension Manager
+- For distribution: Consider Adobe Exchange or direct download
+
+### Performance Optimization Tips
+
+**From Adobe CEP Best Practices:**
+
+1. **Minimize evalScript Calls**: Batch operations in ExtendScript
+2. **Use Asynchronous Communication**: Don't block UI during heavy processing
+3. **Cache CSInterface Instance**: Create once, reuse throughout panel lifetime
+4. **Optimize ExtendScript**: 
+   - Use app.executeMenuCommand() for built-in operations when possible
+   - Group document modifications to reduce redraw overhead
+   - Use app.redraw() judiciously
+5. **Panel Performance**:
+   - Minimize DOM manipulations
+   - Use CSS transforms for animations
+   - Debounce slider inputs before calling ExtendScript
+
+### Common Pitfalls and Solutions
+
+**Problem**: Extension doesn't appear in Illustrator
+- **Solution**: Check manifest.xml syntax, verify CEP version compatibility, ensure bundle ID is unique
+
+**Problem**: evalScript returns "EvalScript error"
+- **Solution**: Check ExtendScript syntax, use try-catch blocks, verify function names, check $.writeln() output in ESTK Console
+
+**Problem**: Extension panel is blank/white
+- **Solution**: Check browser console (via debug mode), verify HTML/CSS paths, check for JavaScript errors
+
+**Problem**: ExtendScript runs slowly
+- **Solution**: Optimize loops, use compound paths, batch operations, profile with $.hiresTimer
+
+### Development Best Practices
+
+1. **Error Handling**: Always use try-catch in both panel JS and ExtendScript
+2. **Logging**: Use console.log() in panel, $.writeln() in ExtendScript
+3. **Version Control**: Separate client and host logic for easier testing
+4. **Testing**: Test across multiple Illustrator versions early
+5. **Documentation**: Document JSX interfaces for team collaboration
+6. **User Feedback**: Show progress indicators for long operations
 
 ### Useful Resources
-- [Adobe CEP GitHub](https://github.com/Adobe-CEP)
-- [CEP Cookbook](https://github.com/Adobe-CEP/CEP-Resources)
-- [Illustrator Scripting Guide](https://ai-scripting.docsforadobe.dev/)
-- [ExtendScript Toolkit](https://extendscript.docsforadobe.dev/)
+
+**Primary Reference:**
+- **[Adobe CEP Getting Started guides](https://github.com/Adobe-CEP/Getting-Started-guides)** - Official Adobe guide for CEP development
+  - Covers development environment setup
+  - Extension structure and manifest configuration
+  - Debugging and testing procedures
+  - Packaging and distribution
+
+**Additional Adobe Resources:**
+- [CEP Resources Repository](https://github.com/Adobe-CEP/CEP-Resources) - Sample extensions and documentation
+- [CEP Cookbook](https://github.com/Adobe-CEP/CEP-Resources/blob/master/CEP_9.x/Documentation/CEP%209.0%20HTML%20Extension%20Cookbook.md) - Comprehensive technical guide
+- [CSInterface.js](https://github.com/Adobe-CEP/CEP-Resources/blob/master/CEP_9.x/CSInterface.js) - Required library for panel-host communication
+- [Sample Extensions](https://github.com/Adobe-CEP/Samples) - Working example extensions
+
+**Illustrator Scripting:**
+- [Illustrator Scripting Guide](https://ai-scripting.docsforadobe.dev/) - Official scripting documentation
+- [Illustrator Scripting Reference](https://illustrator-scripting-guide.readthedocs.io/) - Community-maintained guide
+- [ExtendScript Toolkit](https://extendscript.docsforadobe.dev/) - Language reference
+
+**Tools:**
+- [ZXPSignCmd](https://github.com/Adobe-Distribute/ZXPSignCMD) - Command-line signing tool
+- [Anastasiy's Extension Manager](https://install.anastasiy.com/) - Extension installer for testing
+- Chrome DevTools - For debugging panel JavaScript
 
 ### Contact and Support
 - Project Repository: https://github.com/ltpitt/Halftone-Generator

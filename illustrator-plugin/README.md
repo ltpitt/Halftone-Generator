@@ -104,16 +104,32 @@ This plugin is part of the Halftone-Generator project. When contributing:
 4. Test thoroughly in Illustrator before committing
 5. Update documentation with changes
 
+## CEP Version and Compatibility
+
+Based on [Adobe CEP Getting Started guides](https://github.com/Adobe-CEP/Getting-Started-guides):
+
+- **Target CEP Version**: CEP 9+ (for Illustrator CC 2019 and later)
+- **CEP 10**: Illustrator 2020 and later
+- **CEP 11**: Illustrator 2021 and later
+
+The plugin will target CEP 9 as the minimum to ensure broad compatibility while supporting newer versions.
+
 ## Resources
 
 ### Adobe CEP Documentation
-- [CEP Getting Started Guide](https://github.com/Adobe-CEP/Getting-Started-guides)
+- [CEP Getting Started Guide](https://github.com/Adobe-CEP/Getting-Started-guides) - **Primary reference for plugin development**
+- [CEP Resources](https://github.com/Adobe-CEP/CEP-Resources) - Sample code and documentation
 - [CEP Cookbook](https://github.com/Adobe-CEP/CEP-Resources/blob/master/CEP_9.x/Documentation/CEP%209.0%20HTML%20Extension%20Cookbook.md)
+- [CSInterface.js Library](https://github.com/Adobe-CEP/CEP-Resources/blob/master/CEP_9.x/CSInterface.js)
 - [ExtendScript Toolkit](https://extendscript.docsforadobe.dev/)
 
 ### Illustrator Scripting
 - [Illustrator Scripting Guide](https://ai-scripting.docsforadobe.dev/)
 - [Illustrator Scripting Reference](https://illustrator-scripting-guide.readthedocs.io/)
+
+### Example Extensions
+- [CEP HTML Test Extension](https://github.com/Adobe-CEP/CEP-Resources/tree/master/CEP_9.x/Samples/CEP_HTML_Test_Extension-9.0)
+- [Illustrator Sample Extensions](https://github.com/Adobe-CEP/Samples)
 
 ## License
 
