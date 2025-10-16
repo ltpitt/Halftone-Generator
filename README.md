@@ -33,3 +33,34 @@ The plugin's UI and logic should be based on the features from the `Halftone-Gen
 - The output must be **vector shapes** (e.g., paths, compound paths) in the active Illustrator document, not a raster image.
 - The plugin needs to read pixel data from a selected raster image or rasterize a selected vector object to get the brightness values needed for the halftone calculation.
 - The ExtendScript part (`.jsx`) will handle the Illustrator-specific logic, such as creating shapes, while the HTML/JS part will manage the UI panel.
+
+## Continuous Integration
+
+This project uses GitHub Actions for automated testing and quality assurance. The CI workflow runs automatically on:
+- Pull requests to main/master branches
+- Pushes to main/master branches
+
+### CI Jobs
+
+The CI pipeline includes three parallel test jobs:
+
+1. **Validate Plugin Structure** - Ensures all required files and proper structure
+2. **Test Demo Mode** - Validates demo mode functionality
+3. **E2E Tests** - Runs Playwright end-to-end tests
+
+All jobs must pass before a pull request can be merged. Test results and reports are automatically uploaded as artifacts for review.
+
+### Running Tests Locally
+
+To run the complete test suite:
+
+```bash
+cd illustrator-plugin
+npm install
+npm test
+```
+
+Individual test suites can be run with:
+- `npm run validate` - Structure validation
+- `npm run test:demo` - Demo mode tests
+- `npm run test:e2e` - E2E tests with Playwright
