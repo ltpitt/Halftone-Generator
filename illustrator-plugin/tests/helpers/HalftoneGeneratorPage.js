@@ -2,7 +2,17 @@
 // Follows SOLID principles: Single Responsibility - this class only handles page interactions
 const { expect } = require('@playwright/test');
 
+/**
+ * Page Object Model for the Halftone Generator UI
+ * Encapsulates all page interactions and element locators
+ * 
+ * @class HalftoneGeneratorPage
+ */
 class HalftoneGeneratorPage {
+  /**
+   * Creates an instance of HalftoneGeneratorPage
+   * @param {import('@playwright/test').Page} page - Playwright page object
+   */
   constructor(page) {
     this.page = page;
     

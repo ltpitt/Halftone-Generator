@@ -1,7 +1,7 @@
 // E2E Tests - Pattern Type Selection
 const { test, expect } = require('@playwright/test');
 const { HalftoneGeneratorPage } = require('../helpers/HalftoneGeneratorPage');
-const { PATTERN_TYPES } = require('../helpers/testUtils');
+const { PATTERN_TYPES, TEST_TIMEOUTS } = require('../helpers/testUtils');
 
 test.describe('Pattern Type Selection', () => {
   let page;
@@ -57,7 +57,7 @@ test.describe('Pattern Type Selection', () => {
     await halftoneGenerator.selectPattern('square');
     
     // Wait for canvas update
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(TEST_TIMEOUTS.STANDARD_WAIT);
     
     const canvasData2 = await halftoneGenerator.getCanvasDataURL();
     

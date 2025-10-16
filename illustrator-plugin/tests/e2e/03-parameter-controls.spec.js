@@ -1,7 +1,7 @@
 // E2E Tests - Parameter Controls (Sliders and Checkboxes)
 const { test, expect } = require('@playwright/test');
 const { HalftoneGeneratorPage } = require('../helpers/HalftoneGeneratorPage');
-const { DEFAULT_PARAMS, SLIDER_CONFIGS } = require('../helpers/testUtils');
+const { DEFAULT_PARAMS, SLIDER_CONFIGS, TEST_TIMEOUTS } = require('../helpers/testUtils');
 
 test.describe('Parameter Controls', () => {
   let page;
@@ -165,7 +165,7 @@ test.describe('Parameter Controls', () => {
 
       // Change dot size
       await halftoneGenerator.setSliderValue(halftoneGenerator.dotSizeSlider, 20);
-      await page.waitForTimeout(500);
+      await page.waitForTimeout(TEST_TIMEOUTS.STANDARD_WAIT);
 
       // Canvas should have changed
       const updatedCanvas = await halftoneGenerator.getCanvasDataURL();
@@ -179,7 +179,7 @@ test.describe('Parameter Controls', () => {
 
       // Toggle invert
       await halftoneGenerator.toggleInvert();
-      await page.waitForTimeout(500);
+      await page.waitForTimeout(TEST_TIMEOUTS.STANDARD_WAIT);
 
       // Canvas should have changed
       const invertedCanvas = await halftoneGenerator.getCanvasDataURL();

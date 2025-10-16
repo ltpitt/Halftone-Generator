@@ -2,6 +2,16 @@
 const path = require('path');
 
 /**
+ * Test timing constants
+ * These values control wait times for various async operations
+ */
+const TEST_TIMEOUTS = {
+  SHORT_WAIT: 300,      // For quick UI updates
+  STANDARD_WAIT: 500,   // For canvas rendering and parameter changes
+  LONG_WAIT: 1000,      // For image loading and complex operations
+};
+
+/**
  * Default parameter values for the halftone generator (after reset)
  * Note: Some values may be clamped if they exceed slider limits
  */
@@ -98,6 +108,7 @@ module.exports = {
   DEFAULT_PARAMS,
   PATTERN_TYPES,
   SLIDER_CONFIGS,
+  TEST_TIMEOUTS,
   getFixturePath,
   waitForCondition,
   canvasDataEquals,

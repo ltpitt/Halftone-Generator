@@ -1,7 +1,7 @@
 // E2E Tests - Image Upload and Processing
 const { test, expect } = require('@playwright/test');
 const { HalftoneGeneratorPage } = require('../helpers/HalftoneGeneratorPage');
-const { getFixturePath } = require('../helpers/testUtils');
+const { getFixturePath, TEST_TIMEOUTS } = require('../helpers/testUtils');
 
 test.describe('Image Upload and Processing', () => {
   let page;
@@ -25,7 +25,7 @@ test.describe('Image Upload and Processing', () => {
     await halftoneGenerator.uploadImage(testImagePath);
     
     // Wait for processing
-    await page.waitForTimeout(1000);
+    await page.waitForTimeout(TEST_TIMEOUTS.LONG_WAIT);
     
     // Canvas should have content
     const hasContent = await halftoneGenerator.hasCanvasContent();
@@ -42,7 +42,7 @@ test.describe('Image Upload and Processing', () => {
     await halftoneGenerator.uploadImage(testImagePath);
     
     // Wait for new image to process
-    await page.waitForTimeout(1000);
+    await page.waitForTimeout(TEST_TIMEOUTS.LONG_WAIT);
     
     // Note: Since we're using the same image file, the canvas might be the same
     // But the upload mechanism should still work
@@ -59,7 +59,7 @@ test.describe('Image Upload and Processing', () => {
     // Upload image
     const testImagePath = getFixturePath('test-image.jpg');
     await halftoneGenerator.uploadImage(testImagePath);
-    await page.waitForTimeout(1000);
+    await page.waitForTimeout(TEST_TIMEOUTS.LONG_WAIT);
 
     // Check parameters are still set
     const dotSize = await halftoneGenerator.getDisplayValue(halftoneGenerator.dotSizeValue);
@@ -79,7 +79,7 @@ test.describe('Image Upload and Processing', () => {
     // Upload image
     const testImagePath = getFixturePath('test-image.jpg');
     await halftoneGenerator.uploadImage(testImagePath);
-    await page.waitForTimeout(1000);
+    await page.waitForTimeout(TEST_TIMEOUTS.LONG_WAIT);
 
     // Canvas should have content (halftone applied)
     const hasContent = await halftoneGenerator.hasCanvasContent();

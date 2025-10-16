@@ -1,7 +1,7 @@
 // E2E Tests - Canvas Rendering and Halftone Generation
 const { test, expect } = require('@playwright/test');
 const { HalftoneGeneratorPage } = require('../helpers/HalftoneGeneratorPage');
-const { PATTERN_TYPES } = require('../helpers/testUtils');
+const { PATTERN_TYPES, TEST_TIMEOUTS } = require('../helpers/testUtils');
 
 test.describe('Canvas Rendering', () => {
   let page;
@@ -38,7 +38,7 @@ test.describe('Canvas Rendering', () => {
     // Capture canvas for each pattern type
     for (const pattern of PATTERN_TYPES) {
       await halftoneGenerator.selectPattern(pattern);
-      await page.waitForTimeout(500); // Wait for render
+      await page.waitForTimeout(TEST_TIMEOUTS.STANDARD_WAIT); // Wait for render
       
       const canvasData = await halftoneGenerator.getCanvasDataURL();
       canvasStates.set(pattern, canvasData);
@@ -64,7 +64,7 @@ test.describe('Canvas Rendering', () => {
     // Change multiple parameters
     await halftoneGenerator.setSliderValue(halftoneGenerator.dotSizeSlider, 25);
     await halftoneGenerator.setSliderValue(halftoneGenerator.angleSlider, 180);
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(TEST_TIMEOUTS.STANDARD_WAIT);
 
     const canvas2 = await halftoneGenerator.getCanvasDataURL();
     expect(canvas1).not.toBe(canvas2);
@@ -76,14 +76,14 @@ test.describe('Canvas Rendering', () => {
 
     // Toggle invert
     await halftoneGenerator.toggleInvert();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(TEST_TIMEOUTS.STANDARD_WAIT);
 
     const invertedCanvas = await halftoneGenerator.getCanvasDataURL();
     expect(normalCanvas).not.toBe(invertedCanvas);
 
     // Toggle back
     await halftoneGenerator.toggleInvert();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(TEST_TIMEOUTS.STANDARD_WAIT);
 
     const restoredCanvas = await halftoneGenerator.getCanvasDataURL();
     expect(restoredCanvas).toBe(normalCanvas);
@@ -93,7 +93,7 @@ test.describe('Canvas Rendering', () => {
     // Test with minimum values
     await halftoneGenerator.setSliderValue(halftoneGenerator.dotSizeSlider, 1);
     await halftoneGenerator.setSliderValue(halftoneGenerator.spacingSlider, 0.5);
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(TEST_TIMEOUTS.STANDARD_WAIT);
 
     let hasContent = await halftoneGenerator.hasCanvasContent();
     expect(hasContent).toBe(true);
@@ -101,7 +101,7 @@ test.describe('Canvas Rendering', () => {
     // Test with maximum values
     await halftoneGenerator.setSliderValue(halftoneGenerator.dotSizeSlider, 50);
     await halftoneGenerator.setSliderValue(halftoneGenerator.spacingSlider, 3);
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(TEST_TIMEOUTS.STANDARD_WAIT);
 
     hasContent = await halftoneGenerator.hasCanvasContent();
     expect(hasContent).toBe(true);
@@ -117,7 +117,7 @@ test.describe('Canvas Rendering', () => {
     await halftoneGenerator.selectPattern('diamond');
     
     // Wait for all updates to complete
-    await page.waitForTimeout(1000);
+    await page.waitForTimeout(TEST_TIMEOUTS.LONG_WAIT);
 
     // Canvas should still have content
     const hasContent = await halftoneGenerator.hasCanvasContent();
@@ -153,7 +153,7 @@ test.describe('Canvas Rendering', () => {
       await halftoneGenerator.setSliderValue(halftoneGenerator.angleSlider, transform.angle);
       await halftoneGenerator.setSliderValue(halftoneGenerator.scaleXSlider, transform.scaleX);
       await halftoneGenerator.setSliderValue(halftoneGenerator.scaleYSlider, transform.scaleY);
-      await page.waitForTimeout(500);
+      await page.waitForTimeout(TEST_TIMEOUTS.STANDARD_WAIT);
 
       const hasContent = await halftoneGenerator.hasCanvasContent();
       expect(hasContent).toBe(true);

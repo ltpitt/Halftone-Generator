@@ -1,7 +1,7 @@
 // E2E Tests - Integration Tests (End-to-End Workflows)
 const { test, expect } = require('@playwright/test');
 const { HalftoneGeneratorPage } = require('../helpers/HalftoneGeneratorPage');
-const { getFixturePath, PATTERN_TYPES } = require('../helpers/testUtils');
+const { getFixturePath, PATTERN_TYPES, TEST_TIMEOUTS } = require('../helpers/testUtils');
 
 test.describe('Integration Tests', () => {
   let page;
@@ -18,7 +18,7 @@ test.describe('Integration Tests', () => {
     // 1. Upload image
     const testImagePath = getFixturePath('test-image.jpg');
     await halftoneGenerator.uploadImage(testImagePath);
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(TEST_TIMEOUTS.STANDARD_WAIT);
 
     // 2. Select pattern
     await halftoneGenerator.selectPattern('hexagon');
@@ -31,7 +31,7 @@ test.describe('Integration Tests', () => {
 
     // 4. Generate
     await halftoneGenerator.clickGenerate();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(TEST_TIMEOUTS.STANDARD_WAIT);
 
     // 5. Verify result
     const hasContent = await halftoneGenerator.hasCanvasContent();
@@ -50,7 +50,7 @@ test.describe('Integration Tests', () => {
       
       // Generate
       await halftoneGenerator.clickGenerate();
-      await page.waitForTimeout(300);
+      await page.waitForTimeout(TEST_TIMEOUTS.SHORT_WAIT);
 
       // Capture canvas
       const canvas = await halftoneGenerator.getCanvasDataURL();
@@ -78,12 +78,12 @@ test.describe('Integration Tests', () => {
 
     // Generate
     await halftoneGenerator.clickGenerate();
-    await page.waitForTimeout(300);
+    await page.waitForTimeout(TEST_TIMEOUTS.SHORT_WAIT);
     const canvas1 = await halftoneGenerator.getCanvasDataURL();
 
     // 2. Reset
     await halftoneGenerator.clickReset();
-    await page.waitForTimeout(300);
+    await page.waitForTimeout(TEST_TIMEOUTS.SHORT_WAIT);
 
     // 3. Adjust different parameters
     await halftoneGenerator.selectPattern('diamond');
@@ -92,7 +92,7 @@ test.describe('Integration Tests', () => {
 
     // Generate
     await halftoneGenerator.clickGenerate();
-    await page.waitForTimeout(300);
+    await page.waitForTimeout(TEST_TIMEOUTS.SHORT_WAIT);
     const canvas2 = await halftoneGenerator.getCanvasDataURL();
 
     // Verify canvases are different
@@ -118,7 +118,7 @@ test.describe('Integration Tests', () => {
       await halftoneGenerator.setSliderValue(halftoneGenerator.scaleYSlider, transform.scaleY);
       
       await halftoneGenerator.clickGenerate();
-      await page.waitForTimeout(300);
+      await page.waitForTimeout(TEST_TIMEOUTS.SHORT_WAIT);
 
       const hasContent = await halftoneGenerator.hasCanvasContent();
       expect(hasContent).toBe(true);
@@ -140,7 +140,7 @@ test.describe('Integration Tests', () => {
       await halftoneGenerator.setSliderValue(halftoneGenerator.thresholdSlider, adj.threshold);
       
       await halftoneGenerator.clickGenerate();
-      await page.waitForTimeout(300);
+      await page.waitForTimeout(TEST_TIMEOUTS.SHORT_WAIT);
 
       const hasContent = await halftoneGenerator.hasCanvasContent();
       expect(hasContent).toBe(true);
@@ -152,7 +152,7 @@ test.describe('Integration Tests', () => {
     await halftoneGenerator.setSliderValue(halftoneGenerator.blurSlider, 5);
     await halftoneGenerator.setSliderValue(halftoneGenerator.noiseSlider, 50);
     await halftoneGenerator.clickGenerate();
-    await page.waitForTimeout(300);
+    await page.waitForTimeout(TEST_TIMEOUTS.SHORT_WAIT);
     
     let hasContent = await halftoneGenerator.hasCanvasContent();
     expect(hasContent).toBe(true);
@@ -160,7 +160,7 @@ test.describe('Integration Tests', () => {
     // Test with invert
     await halftoneGenerator.toggleInvert();
     await halftoneGenerator.clickGenerate();
-    await page.waitForTimeout(300);
+    await page.waitForTimeout(TEST_TIMEOUTS.SHORT_WAIT);
     
     hasContent = await halftoneGenerator.hasCanvasContent();
     expect(hasContent).toBe(true);
@@ -169,7 +169,7 @@ test.describe('Integration Tests', () => {
     await halftoneGenerator.setSliderValue(halftoneGenerator.blurSlider, 10);
     await halftoneGenerator.setSliderValue(halftoneGenerator.noiseSlider, 100);
     await halftoneGenerator.clickGenerate();
-    await page.waitForTimeout(300);
+    await page.waitForTimeout(TEST_TIMEOUTS.SHORT_WAIT);
     
     hasContent = await halftoneGenerator.hasCanvasContent();
     expect(hasContent).toBe(true);
@@ -198,12 +198,12 @@ test.describe('Integration Tests', () => {
   test('workflow: complete cycle with all features', async () => {
     // 1. Start with defaults, generate
     await halftoneGenerator.clickGenerate();
-    await page.waitForTimeout(300);
+    await page.waitForTimeout(TEST_TIMEOUTS.SHORT_WAIT);
 
     // 2. Upload custom image
     const testImagePath = getFixturePath('test-image.jpg');
     await halftoneGenerator.uploadImage(testImagePath);
-    await page.waitForTimeout(300);
+    await page.waitForTimeout(TEST_TIMEOUTS.SHORT_WAIT);
 
     // 3. Change to each pattern type and generate
     for (const pattern of ['circle', 'square', 'hexagon']) {
@@ -222,7 +222,7 @@ test.describe('Integration Tests', () => {
     
     // 5. Generate final result
     await halftoneGenerator.clickGenerate();
-    await page.waitForTimeout(300);
+    await page.waitForTimeout(TEST_TIMEOUTS.SHORT_WAIT);
 
     // 6. Verify final state
     const hasContent = await halftoneGenerator.hasCanvasContent();
@@ -233,7 +233,7 @@ test.describe('Integration Tests', () => {
 
     // 7. Reset and verify
     await halftoneGenerator.clickReset();
-    await page.waitForTimeout(300);
+    await page.waitForTimeout(TEST_TIMEOUTS.SHORT_WAIT);
 
     const pattern = await halftoneGenerator.getSelectedPattern();
     expect(pattern).toBe('circle');

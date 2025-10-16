@@ -1,7 +1,7 @@
 // E2E Tests - Reset Functionality
 const { test, expect } = require('@playwright/test');
 const { HalftoneGeneratorPage } = require('../helpers/HalftoneGeneratorPage');
-const { DEFAULT_PARAMS } = require('../helpers/testUtils');
+const { DEFAULT_PARAMS, TEST_TIMEOUTS } = require('../helpers/testUtils');
 
 test.describe('Reset Functionality', () => {
   let page;
@@ -30,7 +30,7 @@ test.describe('Reset Functionality', () => {
 
     // Click reset
     await halftoneGenerator.clickReset();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(TEST_TIMEOUTS.STANDARD_WAIT);
 
     // Verify parameters are reset
     const pattern = await halftoneGenerator.getSelectedPattern();
@@ -57,7 +57,7 @@ test.describe('Reset Functionality', () => {
 
     // Reset
     await halftoneGenerator.clickReset();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(TEST_TIMEOUTS.STANDARD_WAIT);
 
     // Verify reset
     expect(await halftoneGenerator.getDisplayValue(halftoneGenerator.dotSizeValue)).toBe(DEFAULT_PARAMS.dotSize);
@@ -73,7 +73,7 @@ test.describe('Reset Functionality', () => {
 
     // Reset
     await halftoneGenerator.clickReset();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(TEST_TIMEOUTS.STANDARD_WAIT);
 
     // Verify reset (angle includes degree symbol)
     const angle = await halftoneGenerator.getDisplayValue(halftoneGenerator.angleValue);
@@ -91,7 +91,7 @@ test.describe('Reset Functionality', () => {
 
     // Reset
     await halftoneGenerator.clickReset();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(TEST_TIMEOUTS.STANDARD_WAIT);
 
     // Verify reset
     expect(await halftoneGenerator.getDisplayValue(halftoneGenerator.contrastValue)).toBe(DEFAULT_PARAMS.contrast);
@@ -108,7 +108,7 @@ test.describe('Reset Functionality', () => {
 
     // Reset
     await halftoneGenerator.clickReset();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(TEST_TIMEOUTS.STANDARD_WAIT);
 
     // Verify reset
     expect(await halftoneGenerator.getDisplayValue(halftoneGenerator.blurValue)).toBe(DEFAULT_PARAMS.blur);
@@ -121,11 +121,11 @@ test.describe('Reset Functionality', () => {
     await halftoneGenerator.setSliderValue(halftoneGenerator.dotSizeSlider, 35);
     await halftoneGenerator.setSliderValue(halftoneGenerator.angleSlider, 180);
     await halftoneGenerator.selectPattern('line');
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(TEST_TIMEOUTS.STANDARD_WAIT);
 
     // Reset
     await halftoneGenerator.clickReset();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(TEST_TIMEOUTS.STANDARD_WAIT);
 
     // Canvas should still have content after reset
     const hasContent = await halftoneGenerator.hasCanvasContent();
@@ -145,7 +145,7 @@ test.describe('Reset Functionality', () => {
   test('should allow multiple resets', async () => {
     // First reset
     await halftoneGenerator.clickReset();
-    await page.waitForTimeout(300);
+    await page.waitForTimeout(TEST_TIMEOUTS.SHORT_WAIT);
 
     // Change parameters
     await halftoneGenerator.setSliderValue(halftoneGenerator.dotSizeSlider, 20);
@@ -153,7 +153,7 @@ test.describe('Reset Functionality', () => {
 
     // Second reset
     await halftoneGenerator.clickReset();
-    await page.waitForTimeout(300);
+    await page.waitForTimeout(TEST_TIMEOUTS.SHORT_WAIT);
 
     // Verify still at defaults
     const pattern = await halftoneGenerator.getSelectedPattern();
@@ -171,7 +171,7 @@ test.describe('Reset Functionality', () => {
 
     // Reset
     await halftoneGenerator.clickReset();
-    await page.waitForTimeout(300);
+    await page.waitForTimeout(TEST_TIMEOUTS.SHORT_WAIT);
 
     // Should be back to circle
     pattern = await halftoneGenerator.getSelectedPattern();

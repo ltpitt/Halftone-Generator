@@ -1,6 +1,7 @@
 // E2E Tests - Generate Button and Status Messages
 const { test, expect } = require('@playwright/test');
 const { HalftoneGeneratorPage } = require('../helpers/HalftoneGeneratorPage');
+const { TEST_TIMEOUTS } = require('../helpers/testUtils');
 
 test.describe('Generate Button and Status Messages', () => {
   let page;
@@ -35,7 +36,7 @@ test.describe('Generate Button and Status Messages', () => {
     
     // Click generate
     await halftoneGenerator.clickGenerate();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(TEST_TIMEOUTS.STANDARD_WAIT);
 
     // Canvas should update
     const newCanvas = await halftoneGenerator.getCanvasDataURL();
@@ -50,7 +51,7 @@ test.describe('Generate Button and Status Messages', () => {
 
     // Generate
     await halftoneGenerator.clickGenerate();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(TEST_TIMEOUTS.STANDARD_WAIT);
 
     // Canvas should have content
     const hasContent = await halftoneGenerator.hasCanvasContent();
@@ -63,7 +64,7 @@ test.describe('Generate Button and Status Messages', () => {
     for (const pattern of patterns) {
       await halftoneGenerator.selectPattern(pattern);
       await halftoneGenerator.clickGenerate();
-      await page.waitForTimeout(300);
+      await page.waitForTimeout(TEST_TIMEOUTS.SHORT_WAIT);
 
       const hasContent = await halftoneGenerator.hasCanvasContent();
       expect(hasContent).toBe(true);
@@ -77,7 +78,7 @@ test.describe('Generate Button and Status Messages', () => {
     await halftoneGenerator.clickGenerate();
     await page.waitForTimeout(200);
     await halftoneGenerator.clickGenerate();
-    await page.waitForTimeout(300);
+    await page.waitForTimeout(TEST_TIMEOUTS.SHORT_WAIT);
 
     // Canvas should still have content
     const hasContent = await halftoneGenerator.hasCanvasContent();
@@ -91,7 +92,7 @@ test.describe('Generate Button and Status Messages', () => {
     
     // Generate
     await halftoneGenerator.clickGenerate();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(TEST_TIMEOUTS.STANDARD_WAIT);
 
     const hasContent = await halftoneGenerator.hasCanvasContent();
     expect(hasContent).toBe(true);
@@ -100,7 +101,7 @@ test.describe('Generate Button and Status Messages', () => {
   test('should update output info in demo mode', async () => {
     // Generate halftone
     await halftoneGenerator.clickGenerate();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(TEST_TIMEOUTS.STANDARD_WAIT);
 
     // Output info should be visible
     await expect(halftoneGenerator.outputInfo).toBeVisible();
@@ -113,7 +114,7 @@ test.describe('Generate Button and Status Messages', () => {
 
     // Generate
     await halftoneGenerator.clickGenerate();
-    await page.waitForTimeout(300);
+    await page.waitForTimeout(TEST_TIMEOUTS.SHORT_WAIT);
 
     // Parameters should remain the same
     const pattern = await halftoneGenerator.getSelectedPattern();
@@ -126,7 +127,7 @@ test.describe('Generate Button and Status Messages', () => {
   test('should handle generate after parameter changes', async () => {
     // Initial generate
     await halftoneGenerator.clickGenerate();
-    await page.waitForTimeout(300);
+    await page.waitForTimeout(TEST_TIMEOUTS.SHORT_WAIT);
     const canvas1 = await halftoneGenerator.getCanvasDataURL();
 
     // Change parameters
@@ -135,7 +136,7 @@ test.describe('Generate Button and Status Messages', () => {
 
     // Generate again
     await halftoneGenerator.clickGenerate();
-    await page.waitForTimeout(300);
+    await page.waitForTimeout(TEST_TIMEOUTS.SHORT_WAIT);
     const canvas2 = await halftoneGenerator.getCanvasDataURL();
 
     // Canvas should be different
@@ -146,15 +147,15 @@ test.describe('Generate Button and Status Messages', () => {
     // Change parameters and generate
     await halftoneGenerator.setSliderValue(halftoneGenerator.dotSizeSlider, 25);
     await halftoneGenerator.clickGenerate();
-    await page.waitForTimeout(300);
+    await page.waitForTimeout(TEST_TIMEOUTS.SHORT_WAIT);
 
     // Reset
     await halftoneGenerator.clickReset();
-    await page.waitForTimeout(300);
+    await page.waitForTimeout(TEST_TIMEOUTS.SHORT_WAIT);
 
     // Generate with default values
     await halftoneGenerator.clickGenerate();
-    await page.waitForTimeout(300);
+    await page.waitForTimeout(TEST_TIMEOUTS.SHORT_WAIT);
 
     // Should still work
     const hasContent = await halftoneGenerator.hasCanvasContent();
