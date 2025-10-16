@@ -28,3 +28,8 @@ logs/
 tmp/
 temp/
 *.tmp
+
+# Test artifacts
+test-results/
+playwright-report/
+playwright/.cache/

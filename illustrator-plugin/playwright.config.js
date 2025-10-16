@@ -1,0 +1,61 @@
+// Playwright Configuration for Halftone Generator E2E Tests
+// @ts-check
+const { defineConfig, devices } = require('@playwright/test');
+
+/**
+ * @see https://playwright.dev/docs/test-configuration
+ */
+module.exports = defineConfig({
+  testDir: './tests/e2e',
+  
+  // Maximum time one test can run
+  timeout: 30 * 1000,
+  
+  // Test execution settings
+  fullyParallel: true,
+  forbidOnly: !!process.env.CI,
+  retries: process.env.CI ? 2 : 0,
+  workers: process.env.CI ? 1 : undefined,
+  
+  // Reporter configuration
+  reporter: [
+    ['html', { outputFolder: 'test-results/html-report' }],
+    ['list'],
+    ['json', { outputFile: 'test-results/results.json' }]
+  ],
+  
+  // Shared settings for all tests
+  use: {
+    // Base URL for tests
+    baseURL: 'http://localhost:8765',
+    
+    // Collect trace on first retry
+    trace: 'on-first-retry',
+    
+    // Screenshot on failure
+    screenshot: 'only-on-failure',
+    
+    // Video on failure
+    video: 'retain-on-failure',
+  },
+
+  // Configure projects for different browsers
+  projects: [
+    {
+      name: 'chromium',
+      use: { 
+        ...devices['Desktop Chrome'],
+        // Use channel to use system Chrome instead of downloading
+        channel: process.env.CI ? undefined : 'chrome'
+      },
+    },
+  ],
+
+  // Web server configuration
+  webServer: {
+    command: 'cd client && python3 -m http.server 8765',
+    port: 8765,
+    timeout: 120 * 1000,
+    reuseExistingServer: !process.env.CI,
+  },
+});
