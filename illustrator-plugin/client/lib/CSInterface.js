@@ -30,6 +30,11 @@ CSInterface.prototype.getHostEnvironment = function() {
     return this.hostEnvironment;
 };
 
+CSInterface.prototype.getOSInformation = function() {
+    var userAgent = navigator.userAgent;
+    return userAgent;
+};
+
 CSInterface.prototype.addEventListener = function(type, listener, obj) {
     window.__adobe_cep__.addEventListener(type, listener, obj);
 };
@@ -51,3 +56,18 @@ function CSEvent(type, scope, appId, extensionId) {
 }
 
 CSEvent.prototype.data = "";
+
+// CSXSEvent is used in ExtendScript for dispatching events
+function CSXSEvent() {
+    this.type = "";
+    this.scope = "APPLICATION";
+    this.appId = "";
+    this.extensionId = "";
+    this.data = "";
+}
+
+CSXSEvent.prototype.dispatch = function() {
+    if (window.__adobe_cep__) {
+        window.__adobe_cep__.dispatchEvent(this);
+    }
+};
