@@ -2,6 +2,18 @@
 
 This guide explains how to install and test the Halftone Generator plugin in Adobe Illustrator.
 
+## Quick Summary
+
+**What you need to do**:
+1. 📁 Copy the `illustrator-plugin` folder (NOT zip it)
+2. 📂 Paste it into Adobe's CEP extensions folder
+3. ✏️ Rename it to `HalftoneGenerator`
+4. ⚙️ Enable debug mode (to allow unsigned extensions)
+5. 🔄 Restart Illustrator
+6. ✅ Access via Window → Extensions → Halftone Generator
+
+**Important**: The plugin remains as a folder structure. Do NOT zip or compress it.
+
 ## Prerequisites
 
 - **Adobe Illustrator CC 2019 or later** (Version 23.0+)
@@ -10,54 +22,214 @@ This guide explains how to install and test the Halftone Generator plugin in Ado
 
 ## Installation Steps
 
+### Overview
+
+The plugin files need to be copied (not zipped, not moved - **copied**) to Adobe Illustrator's CEP extensions folder. The plugin should remain as a folder structure, not compressed. Follow the platform-specific instructions below.
+
+---
+
 ### Method 1: Development Installation (Manual Copy)
 
-This method is for development and testing without creating a ZXP package.
+This method is for development and testing without creating a ZXP package. **No zipping required** - you simply copy the folder.
 
-#### On macOS:
+---
 
-1. **Locate the CEP extensions folder**:
-   ```bash
-   ~/Library/Application Support/Adobe/CEP/extensions/
-   ```
+#### 📱 On macOS:
 
-2. **Copy the plugin folder**:
-   ```bash
-   cp -r /path/to/illustrator-plugin ~/Library/Application\ Support/Adobe/CEP/extensions/HalftoneGenerator
-   ```
+##### Step 1: Locate the Plugin Folder
 
-3. **Enable debug mode**:
-   ```bash
-   defaults write com.adobe.CSXS.9 PlayerDebugMode 1
-   defaults write com.adobe.CSXS.9 LogLevel 6
-   ```
+First, find where you cloned/downloaded this repository. The plugin files are in:
+```
+Halftone-Generator/illustrator-plugin/
+```
 
-4. **Restart Adobe Illustrator**
+This folder contains:
+- `CSXS/` folder
+- `client/` folder
+- `host/` folder
+- `icons/` folder
+- `.debug` file
+- Other files
 
-#### On Windows:
+##### Step 2: Find the CEP Extensions Folder
 
-1. **Locate the CEP extensions folder**:
-   ```
-   C:\Users\<YourUsername>\AppData\Roaming\Adobe\CEP\extensions\
-   ```
+Open **Finder** and navigate to the CEP extensions folder:
 
-2. **Copy the plugin folder**:
-   - Copy the entire `illustrator-plugin` folder to the extensions directory
-   - Rename it to `HalftoneGenerator`
+**Path**: `~/Library/Application Support/Adobe/CEP/extensions/`
 
-3. **Enable debug mode** (Run as Administrator):
-   - Open Registry Editor (regedit)
-   - Navigate to: `HKEY_CURRENT_USER\Software\Adobe\CSXS.9`
-   - Create a new String Value: `PlayerDebugMode` with value `1`
-   - Create a new String Value: `LogLevel` with value `6`
-   - Or use PowerShell (as Administrator):
-   ```powershell
-   New-Item -Path "HKCU:\Software\Adobe\CSXS.9" -Force
-   Set-ItemProperty -Path "HKCU:\Software\Adobe\CSXS.9" -Name "PlayerDebugMode" -Value "1"
-   Set-ItemProperty -Path "HKCU:\Software\Adobe\CSXS.9" -Name "LogLevel" -Value "6"
-   ```
+**How to get there**:
+1. In Finder, press **Cmd + Shift + G** (Go to Folder)
+2. Paste: `~/Library/Application Support/Adobe/CEP/extensions/`
+3. Press **Enter**
 
-4. **Restart Adobe Illustrator**
+**If the folder doesn't exist**, create it:
+```bash
+mkdir -p ~/Library/Application\ Support/Adobe/CEP/extensions/
+```
+
+##### Step 3: Copy the Plugin Files
+
+**Option A: Using Finder (Visual)**:
+1. Open two Finder windows side by side
+2. In one window, navigate to `Halftone-Generator/illustrator-plugin/`
+3. In the other window, show the CEP extensions folder (from Step 2)
+4. **Drag and drop** the entire `illustrator-plugin` folder into the extensions folder while holding **Option key** (this creates a copy)
+5. **Rename** the copied folder from `illustrator-plugin` to `HalftoneGenerator` (no spaces, no hyphens)
+
+**Option B: Using Terminal**:
+```bash
+# Navigate to the repository
+cd /path/to/Halftone-Generator
+
+# Copy the plugin folder
+cp -r illustrator-plugin ~/Library/Application\ Support/Adobe/CEP/extensions/HalftoneGenerator
+```
+
+**After copying, the structure should be**:
+```
+~/Library/Application Support/Adobe/CEP/extensions/HalftoneGenerator/
+├── CSXS/
+├── client/
+├── host/
+├── icons/
+├── scripts/
+├── .debug
+└── [other files]
+```
+
+##### Step 4: Enable Debug Mode
+
+Open **Terminal** and run these commands:
+
+```bash
+defaults write com.adobe.CSXS.9 PlayerDebugMode 1
+defaults write com.adobe.CSXS.9 LogLevel 6
+```
+
+**What this does**: Allows Illustrator to load unsigned extensions (required for development).
+
+##### Step 5: Verify Installation
+
+```bash
+# Check if folder exists
+ls -la ~/Library/Application\ Support/Adobe/CEP/extensions/HalftoneGenerator/
+
+# You should see CSXS/, client/, host/, etc.
+```
+
+##### Step 6: Restart Adobe Illustrator
+
+1. **Quit** Illustrator completely (Cmd + Q)
+2. **Relaunch** Illustrator
+3. Go to **Window → Extensions → Halftone Generator**
+
+---
+
+#### 🪟 On Windows:
+
+##### Step 1: Locate the Plugin Folder
+
+First, find where you cloned/downloaded this repository. The plugin files are in:
+```
+Halftone-Generator\illustrator-plugin\
+```
+
+This folder contains:
+- `CSXS\` folder
+- `client\` folder
+- `host\` folder
+- `icons\` folder
+- `.debug` file
+- Other files
+
+##### Step 2: Find the CEP Extensions Folder
+
+Open **File Explorer** and navigate to:
+
+**Path**: `C:\Users\<YourUsername>\AppData\Roaming\Adobe\CEP\extensions\`
+
+**How to get there**:
+1. Press **Windows + R** to open Run dialog
+2. Type: `%APPDATA%\Adobe\CEP\extensions`
+3. Press **Enter**
+
+**If the folder doesn't exist**:
+1. Navigate to `%APPDATA%\Adobe\`
+2. Create a new folder called `CEP`
+3. Inside `CEP`, create a new folder called `extensions`
+
+##### Step 3: Copy the Plugin Files
+
+**Option A: Using File Explorer (Visual)**:
+1. Open **File Explorer** and navigate to `Halftone-Generator\illustrator-plugin\`
+2. Select the entire `illustrator-plugin` folder
+3. Press **Ctrl + C** to copy
+4. Navigate to `%APPDATA%\Adobe\CEP\extensions\`
+5. Press **Ctrl + V** to paste
+6. **Rename** the folder from `illustrator-plugin` to `HalftoneGenerator` (no spaces, no hyphens)
+
+**Option B: Using PowerShell**:
+```powershell
+# Navigate to the repository
+cd C:\path\to\Halftone-Generator
+
+# Copy the plugin folder
+Copy-Item -Recurse illustrator-plugin $env:APPDATA\Adobe\CEP\extensions\HalftoneGenerator
+```
+
+**After copying, the structure should be**:
+```
+C:\Users\<YourUsername>\AppData\Roaming\Adobe\CEP\extensions\HalftoneGenerator\
+├── CSXS\
+├── client\
+├── host\
+├── icons\
+├── scripts\
+├── .debug
+└── [other files]
+```
+
+##### Step 4: Enable Debug Mode
+
+**Option A: Using PowerShell (Recommended)**:
+1. **Right-click** on PowerShell and select **"Run as Administrator"**
+2. Run these commands:
+
+```powershell
+New-Item -Path "HKCU:\Software\Adobe\CSXS.9" -Force
+Set-ItemProperty -Path "HKCU:\Software\Adobe\CSXS.9" -Name "PlayerDebugMode" -Value "1"
+Set-ItemProperty -Path "HKCU:\Software\Adobe\CSXS.9" -Name "LogLevel" -Value "6"
+```
+
+**Option B: Using Registry Editor (Manual)**:
+1. Press **Windows + R**, type `regedit`, press **Enter**
+2. Navigate to: `HKEY_CURRENT_USER\Software\Adobe\`
+3. If `CSXS.9` folder doesn't exist, create it:
+   - Right-click on `Adobe` → New → Key
+   - Name it `CSXS.9`
+4. Right-click on `CSXS.9` → New → String Value
+5. Name it `PlayerDebugMode`, set value to `1`
+6. Create another String Value named `LogLevel`, set value to `6`
+
+**What this does**: Allows Illustrator to load unsigned extensions (required for development).
+
+##### Step 5: Verify Installation
+
+Open **PowerShell** or **Command Prompt** and run:
+
+```powershell
+dir $env:APPDATA\Adobe\CEP\extensions\HalftoneGenerator
+```
+
+You should see the plugin files (CSXS, client, host, etc.)
+
+##### Step 6: Restart Adobe Illustrator
+
+1. **Close** Illustrator completely
+2. **Relaunch** Illustrator
+3. Go to **Window → Extensions → Halftone Generator**
+
+---
 
 ### Method 2: ZXP Package Installation (Future)
 
@@ -111,6 +283,42 @@ For production distribution, the plugin will be packaged as a ZXP file. Instruct
 - **ExtendScript Console**: Launch ExtendScript Toolkit to see jsx errors
 
 ## Troubleshooting
+
+### Common Installation Issues
+
+#### "I can't find the CEP extensions folder"
+
+**On macOS**:
+- The folder is hidden by default. Use Cmd + Shift + G in Finder and paste the path
+- If it doesn't exist, create it: `mkdir -p ~/Library/Application\ Support/Adobe/CEP/extensions/`
+
+**On Windows**:
+- The AppData folder is hidden by default. Type `%APPDATA%` in the Run dialog (Windows + R)
+- If CEP/extensions doesn't exist, create both folders manually
+
+#### "I copied the files but the extension doesn't appear"
+
+Check these in order:
+1. **Folder name**: Must be exactly `HalftoneGenerator` (no spaces, capital H, capital G)
+2. **Folder location**: Must be in `.../CEP/extensions/HalftoneGenerator/` not nested deeper
+3. **Folder structure**: Inside `HalftoneGenerator` you should see CSXS, client, host folders directly
+4. **Debug mode**: Must be enabled (see Step 4 above)
+5. **Illustrator restart**: Must fully quit and relaunch Illustrator
+6. **Illustrator version**: Must be CC 2019 or later
+
+#### "The files got zipped/compressed"
+
+**Don't zip the plugin!** The plugin must remain as a folder structure:
+```
+❌ Wrong: HalftoneGenerator.zip
+❌ Wrong: illustrator-plugin.zip
+✅ Correct: HalftoneGenerator/ (folder with subfolders)
+```
+
+If you accidentally zipped it:
+1. Delete the zip file
+2. Extract/unzip the folder
+3. Make sure the extracted folder is named `HalftoneGenerator`
 
 ### Panel doesn't appear in Extensions menu:
 

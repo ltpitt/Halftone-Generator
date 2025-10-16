@@ -10,9 +10,11 @@ This guide helps you get started quickly with the Halftone Generator Adobe Illus
 
 ### Step 2: Install the Plugin
 
+**Important**: Copy the folder, do NOT zip it!
+
 **macOS**:
 ```bash
-# Copy plugin to CEP extensions folder
+# Copy plugin to CEP extensions folder (keep as folder structure)
 cp -r illustrator-plugin ~/Library/Application\ Support/Adobe/CEP/extensions/HalftoneGenerator
 
 # Enable debug mode
@@ -23,7 +25,7 @@ defaults write com.adobe.CSXS.9 PlayerDebugMode 1
 
 **Windows** (Run PowerShell as Administrator):
 ```powershell
-# Copy plugin to CEP extensions folder
+# Copy plugin to CEP extensions folder (keep as folder structure)
 Copy-Item -Recurse illustrator-plugin $env:APPDATA\Adobe\CEP\extensions\HalftoneGenerator
 
 # Enable debug mode
@@ -32,6 +34,14 @@ Set-ItemProperty -Path "HKCU:\Software\Adobe\CSXS.9" -Name "PlayerDebugMode" -Va
 
 # Restart Illustrator
 ```
+
+**What's happening**:
+- The plugin folder is **copied** (not moved, not zipped) to Adobe's extensions directory
+- It's renamed to `HalftoneGenerator` (one word, no spaces)
+- Debug mode allows Illustrator to load unsigned extensions
+- The folder structure remains intact with all subfolders (CSXS/, client/, host/, etc.)
+
+**See INSTALLATION.md for detailed step-by-step instructions with screenshots and troubleshooting.**
 
 ### Step 3: Use the Plugin
 
