@@ -5,11 +5,9 @@
 ### Web Application Protection
 - **NEVER modify, delete, or touch the existing web application files**
 - The following files must remain untouched:
-  - `index.html`
-  - `script.js`
-  - `script-old.js`
-  - `style.css`
-  - `style-backup.css`
+  - `web-app/index.html`
+  - `web-app/script.js`
+  - `web-app/style.css`
 - These files represent the working web-based halftone generator
 - Any changes to the web app could break functionality for current users
 
@@ -22,17 +20,17 @@
 ### Project Structure
 ```
 Halftone-Generator/
-├── index.html              # Web app - DO NOT MODIFY
-├── script.js               # Web app - DO NOT MODIFY  
-├── script-old.js           # Web app - DO NOT MODIFY
-├── style.css               # Web app - DO NOT MODIFY
-├── style-backup.css        # Web app - DO NOT MODIFY
-├── README.md               # Project documentation
-├── AGENTS.md               # This file
-└── illustrator-plugin/     # ALL plugin work goes here
-    ├── README.md
-    ├── MIGRATION_PLAN.md
-    └── [plugin files]
+├── web-app/                # Web-based halftone generator
+│   ├── index.html          # Web app - DO NOT MODIFY
+│   ├── script.js           # Web app - DO NOT MODIFY
+│   ├── style.css           # Web app - DO NOT MODIFY
+│   └── README.md           # Web app documentation
+├── illustrator-plugin/     # Adobe Illustrator plugin
+│   ├── README.md
+│   ├── MIGRATION_PLAN.md
+│   └── [plugin files]
+├── README.md               # Main project documentation
+└── AGENTS.md               # This file
 ```
 
 ## Guidelines for Agents
@@ -41,6 +39,7 @@ Halftone-Generator/
 - If asked to modify the web app, politely decline and explain it must remain unchanged
 - Direct any web app improvements to be postponed or considered separately
 - The web app is production code serving users
+- All web app files are located in the `web-app/` directory
 
 ### When Working on Illustrator Plugin
 - All work must be within `illustrator-plugin/` directory

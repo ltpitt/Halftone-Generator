@@ -1,66 +1,82 @@
-# Adobe Illustrator Halftone Plugin
+# Halftone Generator
 
-## Goal
+A collection of halftone generation tools that create artistic halftone patterns from images.
 
-The primary goal of this project is to create an Adobe Illustrator plugin that replicates the functionality of a web-based halftone generator. The plugin should allow a user to select an image or vector object within Illustrator and apply a configurable vector-based halftone effect to it.
+## 📁 Project Structure
 
-## Core Functionality to Implement
+This repository contains two separate halftone generator implementations:
 
-The plugin's UI and logic should be based on the features from the `Halftone-Generator_OLD` project.
+### 🌐 [Web Application](./web-app/)
+A browser-based halftone generator - no installation required!
+- **Location**: `web-app/`
+- **Type**: Static web application (HTML/CSS/JavaScript)
+- **Usage**: Open `web-app/index.html` in any modern browser
+- **Features**: Real-time halftone generation with Canvas API
+- [View Web App Documentation →](./web-app/README.md)
 
-### UI Controls:
-- **Source Selection**: A way to target the selected object(s) in Illustrator.
-- **Pattern Type**: Radio buttons or a dropdown for: Circle, Square, Diamond, Line, Cross, Hexagon.
-- **Dot Parameters**:
-    - **Size**: Slider to control the maximum size of the pattern elements.
-    - **Spacing**: Slider to control the grid spacing between elements.
-    - **Density**: Slider to control the overall effect intensity.
-- **Transformation**:
-    - **Angle**: Slider to rotate the halftone grid.
-    - **Scale X / Scale Y**: Sliders to stretch the pattern elements.
-- **Image Adjustments**:
-    - **Contrast, Brightness, Gamma, Threshold**: Sliders to preprocess the source image data.
-- **Advanced Options**:
-    - **Blur, Noise**: Sliders for advanced effects.
-    - **Invert**: A checkbox to invert the relationship between brightness and dot size.
-- **Actions**:
-    - A "Generate" button to create the vector halftone pattern.
-    - A "Reset" button to clear the settings.
+### 🎨 [Adobe Illustrator Plugin](./illustrator-plugin/)
+A professional plugin for creating vector halftone effects in Adobe Illustrator
+- **Location**: `illustrator-plugin/`
+- **Type**: Adobe CEP (Common Extensibility Platform) plugin
+- **Usage**: Install as an Illustrator extension
+- **Features**: Vector-based halftone patterns with full Illustrator integration
+- [View Plugin Documentation →](./illustrator-plugin/README.md)
 
-## Technical Requirements
+## 🚀 Quick Start
 
-- The plugin must be built using the Adobe CEP framework (HTML, CSS, JavaScript).
-- The output must be **vector shapes** (e.g., paths, compound paths) in the active Illustrator document, not a raster image.
-- The plugin needs to read pixel data from a selected raster image or rasterize a selected vector object to get the brightness values needed for the halftone calculation.
-- The ExtendScript part (`.jsx`) will handle the Illustrator-specific logic, such as creating shapes, while the HTML/JS part will manage the UI panel.
+### Using the Web Application
+```bash
+# Simply open in browser - no build required!
+open web-app/index.html
+```
 
-## Continuous Integration
-
-This project uses GitHub Actions for automated testing and quality assurance. The CI workflow runs automatically on:
-- Pull requests to main/master branches
-- Pushes to main/master branches
-
-### CI Jobs
-
-The CI pipeline includes three parallel test jobs:
-
-1. **Validate Plugin Structure** - Ensures all required files and proper structure
-2. **Test Demo Mode** - Validates demo mode functionality
-3. **E2E Tests** - Runs Playwright end-to-end tests
-
-All jobs must pass before a pull request can be merged. Test results and reports are automatically uploaded as artifacts for review.
-
-### Running Tests Locally
-
-To run the complete test suite:
-
+### Using the Illustrator Plugin
 ```bash
 cd illustrator-plugin
 npm install
 npm test
 ```
+See the [Illustrator Plugin README](./illustrator-plugin/README.md) for installation instructions.
 
-Individual test suites can be run with:
-- `npm run validate` - Structure validation
-- `npm run test:demo` - Demo mode tests
-- `npm run test:e2e` - E2E tests with Playwright
+## ✨ Features
+
+Both tools provide similar halftone generation capabilities:
+
+- **Multiple Pattern Types**: Circle, Square, Diamond, Line, Cross, Hexagon
+- **Customizable Parameters**: Size, spacing, density, rotation, scaling
+- **Image Adjustments**: Contrast, brightness, gamma, threshold
+- **Advanced Effects**: Blur, noise, invert options
+
+## 🛠️ Development
+
+### Web Application
+The web app is self-contained with no build process required. Simply edit the HTML, CSS, or JavaScript files and refresh your browser.
+
+### Illustrator Plugin
+The plugin includes a full test suite with CI/CD integration:
+
+```bash
+cd illustrator-plugin
+npm install          # Install dependencies
+npm test            # Run all tests
+npm run validate    # Validate structure
+npm run test:e2e    # Run E2E tests
+```
+
+## 📚 Documentation
+
+- [AGENTS.md](./AGENTS.md) - Guidelines for AI agents working on this project
+- [Web App Documentation](./web-app/README.md) - Web application details
+- [Plugin Documentation](./illustrator-plugin/README.md) - Illustrator plugin details
+
+## 🤝 Contributing
+
+Both projects are maintained independently:
+- Web app changes should be minimal and focused on bug fixes
+- Plugin development is active and welcomes contributions
+
+See individual project READMEs for specific contribution guidelines.
+
+## 📄 License
+
+See individual project directories for license information.
