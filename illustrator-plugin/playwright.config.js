@@ -29,14 +29,8 @@ module.exports = defineConfig({
     // Base URL for tests
     baseURL: 'http://localhost:8765',
     
-    // Collect trace on first retry
-    trace: 'on-first-retry',
-    
     // Screenshot on failure
     screenshot: 'only-on-failure',
-    
-    // Video on failure
-    video: 'retain-on-failure',
   },
 
   // Configure projects for different browsers
@@ -45,8 +39,8 @@ module.exports = defineConfig({
       name: 'chromium',
       use: { 
         ...devices['Desktop Chrome'],
-        // Use channel to use system Chrome instead of downloading
-        channel: process.env.CI ? undefined : 'chrome'
+        // Use channel to use system Chrome
+        channel: 'chrome'
       },
     },
   ],

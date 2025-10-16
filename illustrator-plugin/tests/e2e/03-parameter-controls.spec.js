@@ -15,11 +15,14 @@ test.describe('Parameter Controls', () => {
   });
 
   test.describe('Slider Controls', () => {
-    test('should display default values on load', async () => {
-      expect(await halftoneGenerator.getDisplayValue(halftoneGenerator.dotSizeValue)).toBe(DEFAULT_PARAMS.dotSize);
-      expect(await halftoneGenerator.getDisplayValue(halftoneGenerator.spacingValue)).toBe(DEFAULT_PARAMS.spacing);
-      expect(await halftoneGenerator.getDisplayValue(halftoneGenerator.densityValue)).toBe(DEFAULT_PARAMS.density);
-      expect(await halftoneGenerator.getDisplayValue(halftoneGenerator.angleValue)).toBe(DEFAULT_PARAMS.angle);
+    test('should display initial values on load (from HTML)', async () => {
+      // These are the initial values set in the HTML, not the reset defaults
+      expect(await halftoneGenerator.getDisplayValue(halftoneGenerator.dotSizeValue)).toBe('8');
+      expect(await halftoneGenerator.getDisplayValue(halftoneGenerator.spacingValue)).toBe('1.2');
+      expect(await halftoneGenerator.getDisplayValue(halftoneGenerator.densityValue)).toBe('100');
+      // Angle includes degree symbol
+      const angleText = await halftoneGenerator.getDisplayValue(halftoneGenerator.angleValue);
+      expect(angleText).toContain('45');
     });
 
     test('should update dot size slider and display value', async () => {

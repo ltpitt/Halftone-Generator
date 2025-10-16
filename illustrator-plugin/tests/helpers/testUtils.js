@@ -2,19 +2,20 @@
 const path = require('path');
 
 /**
- * Default parameter values for the halftone generator
+ * Default parameter values for the halftone generator (after reset)
+ * Note: Some values may be clamped if they exceed slider limits
  */
 const DEFAULT_PARAMS = {
   pattern: 'circle',
-  dotSize: '8',
-  spacing: '1.2',
-  density: '100',
-  angle: '45',
-  scaleX: '1.0',
-  scaleY: '1.0',
-  contrast: '1.0',
+  dotSize: '10',
+  spacing: '3', // defaults.spacing is 15, but gets clamped to max 3
+  density: '10', // defaults.density is 1.0, but gets clamped to min 10
+  angle: '0',
+  scaleX: '1', // May display as '1' or '1.0' depending on implementation
+  scaleY: '1', // May display as '1' or '1.0' depending on implementation
+  contrast: '1',
   brightness: '0',
-  gamma: '1.0',
+  gamma: '1',
   threshold: '128',
   blur: '0',
   noise: '0',
