@@ -4,9 +4,13 @@
   "description": "Adobe Illustrator plugin for generating vector halftone patterns",
   "main": "client/index.html",
   "scripts": {
+    "test": "npm run validate && npm run test:demo",
     "validate": "npm run validate:manifest && npm run validate:structure",
     "validate:manifest": "echo 'Validating manifest.xml...' && xmllint --noout CSXS/manifest.xml || echo 'xmllint not available, skipping XML validation'",
-    "validate:structure": "node scripts/validate-structure.js"
+    "validate:structure": "node scripts/validate-structure.js",
+    "test:demo": "node scripts/test-demo-mode.js",
+    "serve": "cd client && python3 -m http.server 8000",
+    "serve:demo": "npm run serve"
   },
   "keywords": [
     "adobe",

@@ -4,10 +4,74 @@ This guide provides comprehensive testing procedures for the Halftone Generator 
 
 ## Overview
 
-Since Adobe Illustrator cannot be installed in CI/CD environments, testing is split into two categories:
+The plugin supports **dual-mode operation**:
 
-1. **Automated Validation** - Runs in CI/CD, no Illustrator required
-2. **Manual Testing** - Requires Illustrator installation
+1. **Demo Mode** (Browser) - Full UI testing and halftone preview without Illustrator
+2. **Production Mode** (Illustrator) - Full plugin functionality within Illustrator
+
+This enables extensive testing without requiring Adobe Illustrator installation.
+
+## Testing Categories
+
+1. **Demo Mode Testing** - Browser-based testing, no Illustrator required
+2. **Automated Validation** - Runs in CI/CD, no Illustrator required  
+3. **Manual Testing** - Requires Illustrator installation
+
+## Demo Mode Testing (Browser-Based)
+
+### Quick Start - Demo Mode
+
+1. **Open in Browser**:
+   ```bash
+   # Option 1: Direct file open
+   open client/index.html
+   
+   # Option 2: Local server (recommended)
+   cd client
+   python3 -m http.server 8000
+   # Then visit http://localhost:8000
+   ```
+
+2. **Test Basic Functionality**:
+   - Plugin loads with "Running in Demo Mode" indicator
+   - Example image automatically loads and displays halftone
+   - File upload section is visible
+   - Canvas preview area shows live halftone effect
+   - All UI controls are interactive
+
+3. **Test Image Processing**:
+   - Example image loads automatically on startup
+   - Adjust parameters to see real-time halftone updates
+   - Load a custom test image (PNG/JPG) via file upload
+   - Verify both auto-loaded and custom images work correctly
+
+### Demo Mode Features
+
+**✅ What Works**:
+- Complete UI functionality
+- Image file loading and processing
+- Real-time halftone generation on canvas
+- All pattern types (circle, square, diamond, line, cross, hexagon)
+- Parameter adjustments with live preview
+- Error handling and status messages
+
+**❌ What Doesn't Work**:
+- Vector shape generation (canvas-only preview)
+- Integration with Illustrator documents
+- ExtendScript communication
+
+### Automated Testing with Demo Mode
+
+```bash
+# Run structure validation
+npm run validate:structure
+
+# Test demo mode in headless browser (if configured)
+npm run test:demo
+
+# Run all automated tests
+npm test
+```
 
 ## Automated Validation (No Illustrator Required)
 

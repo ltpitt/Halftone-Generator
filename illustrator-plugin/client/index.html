@@ -50,20 +50,20 @@
                 <h2>Dot Parameters</h2>
                 <div class="control-group">
                     <label>
-                        <span>Size: <span id="dotSizeValue">10</span></span>
-                        <input type="range" id="dotSize" min="1" max="50" value="10" step="1">
+                        <span>Size: <span id="dotSizeValue">8</span>px</span>
+                        <input type="range" id="dotSize" min="1" max="50" value="8" step="0.5">
                     </label>
                 </div>
                 <div class="control-group">
                     <label>
-                        <span>Spacing: <span id="spacingValue">15</span></span>
-                        <input type="range" id="spacing" min="5" max="100" value="15" step="1">
+                        <span>Spacing: <span id="spacingValue">1.2</span>x</span>
+                        <input type="range" id="spacing" min="0.5" max="3" value="1.2" step="0.1">
                     </label>
                 </div>
                 <div class="control-group">
                     <label>
-                        <span>Density: <span id="densityValue">1.0</span></span>
-                        <input type="range" id="density" min="0.1" max="2.0" value="1.0" step="0.1">
+                        <span>Density: <span id="densityValue">100</span>%</span>
+                        <input type="range" id="density" min="10" max="200" value="100" step="5">
                     </label>
                 </div>
             </section>
@@ -73,8 +73,8 @@
                 <h2>Transformation</h2>
                 <div class="control-group">
                     <label>
-                        <span>Angle: <span id="angleValue">0</span>°</span>
-                        <input type="range" id="angle" min="0" max="360" value="0" step="1">
+                        <span>Angle: <span id="angleValue">45</span>°</span>
+                        <input type="range" id="angle" min="0" max="360" value="45" step="1">
                     </label>
                 </div>
                 <div class="control-group">
@@ -142,6 +142,35 @@
                     </label>
                 </div>
             </section>
+
+            <!-- Demo Mode File Upload (Browser Only) -->
+            <section id="demoFileSection" class="control-section demo-only" style="display: none;">
+                <h2>Load Image (Demo Mode)</h2>
+                <div class="control-group">
+                    <input type="file" id="imageInput" accept="image/*" class="file-input">
+                    <label for="imageInput" class="file-label">Choose Image File</label>
+
+                </div>
+            </section>
+
+            <!-- Canvas Preview (Demo Mode) -->
+            <section id="demoCanvasSection" class="control-section demo-only" style="display: none;">
+                <h2>Preview</h2>
+                <div class="canvas-container">
+                    <canvas id="halftoneCanvas" width="300" height="300"></canvas>
+                    <div id="canvasOverlay" class="canvas-overlay">
+                        <p>Loading example image...</p>
+                    </div>
+                </div>
+                <div class="canvas-info">
+                    <span id="outputInfo">No image loaded</span>
+                </div>
+            </section>
+
+            <!-- Mode Indicator -->
+            <div id="modeIndicator" class="mode-indicator">
+                <span id="modeText">Detecting environment...</span>
+            </div>
 
             <!-- Action Buttons -->
             <section class="action-section">

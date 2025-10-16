@@ -72,15 +72,53 @@ illustrator-plugin/
 └── README.md                 # This file
 ```
 
+## Demo Mode 🌐
+
+**Try the plugin without Adobe Illustrator!**
+
+The plugin includes a **Demo Mode** that runs in any web browser, enabling:
+- ✅ Full UI testing and interaction
+- ✅ Image loading and halftone generation
+- ✅ Real-time parameter adjustments with canvas preview
+- ✅ All pattern types and effects
+- ✅ Complete feature exploration
+
+### Quick Demo
+
+```bash
+# Open demo mode in browser
+open client/index.html
+
+# Or serve with local server (recommended)
+cd client
+python3 -m http.server 8000
+# Visit: http://localhost:8000
+```
+
+**Instant Preview**: Demo mode automatically loads an example image so you can immediately see halftone effects and experiment with all parameters!
+
+**Demo vs Production**:
+- **Demo Mode**: Canvas-based preview, image file upload, browser testing
+- **Production Mode**: Vector shape creation, Illustrator object selection, full plugin functionality
+
+This enables extensive development and testing without requiring Adobe Illustrator installation.
+
 ## Getting Started
 
 ### For Users (Testing)
 
-See [QUICKSTART.md](./QUICKSTART.md) for quick installation and usage instructions.
+**Option 1: Demo Mode** (No Illustrator Required)
+```bash
+open client/index.html  # Opens in default browser
+```
+
+**Option 2: Full Plugin** (Requires Illustrator)
+See [QUICKSTART.md](./QUICKSTART.md) for installation and usage instructions.
 
 Detailed guides:
-- [INSTALLATION.md](./INSTALLATION.md) - Complete installation guide
-- [TESTING.md](./TESTING.md) - Testing procedures
+- [DEMO_MODE.md](./DEMO_MODE.md) - Complete demo mode guide and testing
+- [INSTALLATION.md](./INSTALLATION.md) - Complete installation guide  
+- [TESTING.md](./TESTING.md) - Testing procedures including demo mode
 
 ### For Developers (Contributing)
 

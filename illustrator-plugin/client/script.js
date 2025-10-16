@@ -4,8 +4,24 @@
 (function() {
     'use strict';
 
-    // Initialize CEP interface
-    const csInterface = new CSInterface();
+    // Environment detection
+    let isIllustratorMode = false;
+    let csInterface = null;
+    let currentImage = null;
+    let halftoneCanvas = null;
+    let halftoneCtx = null;
+    let updateTimeout = null;
+
+    // Try to initialize CEP interface
+    try {
+        csInterface = new CSInterface();
+        // Test if CSInterface is working
+        csInterface.getOSInformation();
+        isIllustratorMode = true;
+    } catch (e) {
+        console.log('CSInterface not available - running in demo mode');
+        isIllustratorMode = false;
+    }
 
     // Get all UI elements
     const elements = {
@@ -52,7 +68,16 @@
         resetBtn: document.getElementById('resetBtn'),
         
         // Status
-        status: document.getElementById('status')
+        status: document.getElementById('status'),
+        
+        // Demo mode elements
+        imageInput: document.getElementById('imageInput'),
+        demoFileSection: document.getElementById('demoFileSection'),
+        demoCanvasSection: document.getElementById('demoCanvasSection'),
+        modeIndicator: document.getElementById('modeIndicator'),
+        modeText: document.getElementById('modeText'),
+        canvasOverlay: document.getElementById('canvasOverlay'),
+        outputInfo: document.getElementById('outputInfo')
     };
 
     // Default parameter values
@@ -77,13 +102,51 @@
     function init() {
         console.log('Initializing Halftone Generator panel...');
         
+        // Setup mode-specific UI
+        setupModeUI();
+        
         // Setup event listeners
         setupEventListeners();
         
         // Update initial values
         updateAllValueDisplays();
         
+        // Initialize canvas if in demo mode
+        if (!isIllustratorMode) {
+            initializeCanvas();
+            // Auto-load example image in demo mode
+            loadExampleImage();
+        }
+        
         console.log('Panel initialized successfully');
+    }
+    
+    // Setup UI based on current mode
+    function setupModeUI() {
+        if (isIllustratorMode) {
+            // Hide mode indicator entirely for professional Illustrator users
+            elements.modeIndicator.style.display = 'none';
+            // Hide demo-only elements
+            elements.demoFileSection.style.display = 'none';
+            elements.demoCanvasSection.style.display = 'none';
+        } else {
+            // Demo mode can mention it's a demo since it's browser-based
+            elements.modeText.textContent = 'Demo Mode - Try the live preview!';
+            elements.modeIndicator.className = 'mode-indicator demo-mode';
+            elements.modeIndicator.style.display = 'block';
+            // Show demo-only elements
+            elements.demoFileSection.style.display = 'block';
+            elements.demoCanvasSection.style.display = 'block';
+        }
+    }
+    
+    // Initialize canvas for demo mode
+    function initializeCanvas() {
+        halftoneCanvas = document.getElementById('halftoneCanvas');
+        if (halftoneCanvas) {
+            halftoneCtx = halftoneCanvas.getContext('2d');
+            console.log('Canvas initialized for demo mode');
+        }
     }
 
     // Setup all event listeners
@@ -107,6 +170,13 @@
         sliders.forEach(function(slider) {
             slider.element.addEventListener('input', function() {
                 updateValueDisplay(slider.element, slider.display, slider.suffix);
+                // Real-time preview in demo mode with debouncing
+                if (!isIllustratorMode && currentImage) {
+                    clearTimeout(updateTimeout);
+                    updateTimeout = setTimeout(function() {
+                        generateHalftoneCanvas(getCurrentParameters());
+                    }, 100); // 100ms debounce for smoother interaction
+                }
             });
         });
 
@@ -115,9 +185,38 @@
 
         // Reset button
         elements.resetBtn.addEventListener('click', resetToDefaults);
+        
+        // Demo mode file input
+        if (!isIllustratorMode && elements.imageInput) {
+            elements.imageInput.addEventListener('change', handleFileSelect);
+        }
+        
+        // Real-time preview for pattern changes (demo mode only)
+        if (!isIllustratorMode) {
+            elements.patternRadios.forEach(function(radio) {
+                radio.addEventListener('change', function() {
+                    if (currentImage) {
+                        clearTimeout(updateTimeout); // Cancel any pending slider updates
+                        generateHalftoneCanvas(getCurrentParameters());
+                    }
+                });
+            });
+            
+            // Real-time preview for invert checkbox
+            if (elements.invert) {
+                elements.invert.addEventListener('change', function() {
+                    if (currentImage) {
+                        clearTimeout(updateTimeout); // Cancel any pending slider updates
+                        generateHalftoneCanvas(getCurrentParameters());
+                    }
+                });
+            }
+        }
 
-        // Listen for progress events from ExtendScript
-        csInterface.addEventListener('halftone.progress', handleProgressEvent);
+        // Listen for progress events from ExtendScript (Illustrator mode only)
+        if (isIllustratorMode) {
+            csInterface.addEventListener('halftone.progress', handleProgressEvent);
+        }
     }
 
     // Update a value display
@@ -202,35 +301,48 @@
         const params = getCurrentParameters();
         console.log('Parameters:', params);
 
-        // Call ExtendScript function
-        const paramsJSON = JSON.stringify(params);
-        const script = 'generateHalftone(' + paramsJSON + ')';
-        
-        csInterface.evalScript(script, function(result) {
-            console.log('ExtendScript result:', result);
+        if (isIllustratorMode) {
+            // Illustrator mode - call ExtendScript
+            const paramsJSON = JSON.stringify(params);
+            const script = 'generateHalftone(' + paramsJSON + ')';
+            
+            csInterface.evalScript(script, function(result) {
+                console.log('ExtendScript result:', result);
+                
+                // Re-enable button
+                elements.generateBtn.disabled = false;
+                elements.generateBtn.textContent = 'Generate Halftone';
+                
+                if (result === 'EvalScript error.') {
+                    showStatus('Error: ExtendScript execution failed', 'error');
+                    return;
+                }
+                
+                try {
+                    const resultData = JSON.parse(result);
+                    
+                    if (resultData.success) {
+                        showStatus('Halftone generated successfully! Created ' + resultData.shapesCreated + ' shapes.', 'success');
+                    } else {
+                        showStatus('Error: ' + resultData.error, 'error');
+                    }
+                } catch (e) {
+                    console.error('Error parsing result:', e);
+                    showStatus('Error: Invalid response from ExtendScript', 'error');
+                }
+            });
+        } else {
+            // Demo mode - generate on canvas
+            if (currentImage) {
+                generateHalftoneCanvas(params);
+            } else {
+                showStatus('Please load an image first.', 'warning');
+            }
             
             // Re-enable button
             elements.generateBtn.disabled = false;
             elements.generateBtn.textContent = 'Generate Halftone';
-            
-            if (result === 'EvalScript error.') {
-                showStatus('Error: ExtendScript execution failed', 'error');
-                return;
-            }
-            
-            try {
-                const resultData = JSON.parse(result);
-                
-                if (resultData.success) {
-                    showStatus('Halftone generated successfully! Created ' + resultData.shapesCreated + ' shapes.', 'success');
-                } else {
-                    showStatus('Error: ' + resultData.error, 'error');
-                }
-            } catch (e) {
-                console.error('Error parsing result:', e);
-                showStatus('Error: Invalid response from ExtendScript', 'error');
-            }
-        });
+        }
     }
 
     // Handle progress events from ExtendScript
@@ -245,6 +357,302 @@
         } catch (e) {
             console.error('Error parsing progress event:', e);
         }
+    }
+
+    // ===============================
+    // DEMO MODE FUNCTIONS
+    // ===============================
+    
+    // Load example image automatically in demo mode
+    function loadExampleImage() {
+        const exampleImagePath = 'test-image.jpg';
+        
+        const img = new Image();
+        img.onload = () => {
+            currentImage = img;
+            setupCanvas(img);
+            updateOutputInfo(img);
+            
+            // Auto-generate halftone with current parameters
+            generateHalftoneCanvas(getCurrentParameters());
+            
+            // Hide overlay
+            if (elements.canvasOverlay) {
+                elements.canvasOverlay.style.display = 'none';
+            }
+            
+            showStatus('Example image loaded! Try adjusting the parameters above.', 'success');
+            console.log('Example image loaded successfully:', img.width + 'x' + img.height);
+        };
+        
+        img.onerror = () => {
+            console.log('Example image not found, demo mode will wait for user upload');
+            // Show overlay with instructions
+            if (elements.canvasOverlay) {
+                elements.canvasOverlay.innerHTML = '<p>Load an image to see preview<br><small>Click "Choose Image File" above</small></p>';
+                elements.canvasOverlay.style.display = 'flex';
+            }
+        };
+        
+        img.src = exampleImagePath;
+    }
+    
+    // Handle file selection in demo mode
+    function handleFileSelect(e) {
+        const file = e.target.files[0];
+        if (file) {
+            processImageFile(file);
+        }
+    }
+    
+    // Process the selected image file
+    function processImageFile(file) {
+        console.log('Processing image file:', file.name);
+        
+        const reader = new FileReader();
+        
+        reader.onload = (event) => {
+            const img = new Image();
+            img.onload = () => {
+                currentImage = img;
+                setupCanvas(img);
+                updateOutputInfo(img);
+                
+                // Auto-generate halftone with current parameters
+                generateHalftoneCanvas(getCurrentParameters());
+                
+                // Hide overlay
+                if (elements.canvasOverlay) {
+                    elements.canvasOverlay.style.display = 'none';
+                }
+                
+                showStatus('Image loaded and halftone generated!', 'success');
+                console.log('Image loaded successfully:', img.width + 'x' + img.height);
+            };
+            img.onerror = () => {
+                console.error('Error loading image');
+                showStatus('Error loading image. Please try a different file.', 'error');
+            };
+            img.src = event.target.result;
+        };
+        
+        reader.onerror = () => {
+            console.error('Error reading file');
+            showStatus('Error reading file. Please try again.', 'error');
+        };
+        
+        reader.readAsDataURL(file);
+    }
+    
+    // Setup canvas with proper dimensions
+    function setupCanvas(img) {
+        if (!halftoneCanvas || !halftoneCtx) return;
+        
+        // Calculate canvas size maintaining aspect ratio
+        const maxWidth = 300;
+        const maxHeight = 300;
+        
+        let { width, height } = img;
+        
+        if (width > maxWidth) {
+            height = (height * maxWidth) / width;
+            width = maxWidth;
+        }
+        
+        if (height > maxHeight) {
+            width = (width * maxHeight) / height;
+            height = maxHeight;
+        }
+        
+        halftoneCanvas.width = width;
+        halftoneCanvas.height = height;
+        
+        console.log(`Canvas setup: ${width}x${height}`);
+    }
+    
+    // Update output information display
+    function updateOutputInfo(img) {
+        if (elements.outputInfo) {
+            elements.outputInfo.textContent = `${img.width} × ${img.height}px`;
+        }
+    }
+    
+    // Generate halftone on canvas (demo mode)
+    function generateHalftoneCanvas(params) {
+        if (!currentImage || !halftoneCanvas || !halftoneCtx) {
+            showStatus('No image loaded. Please select an image first.', 'warning');
+            return;
+        }
+        
+        console.log('Generating halftone on canvas...');
+        
+        try {
+            // Clear canvas
+            halftoneCtx.clearRect(0, 0, halftoneCanvas.width, halftoneCanvas.height);
+            
+            // Set background
+            halftoneCtx.fillStyle = params.invert ? '#000000' : '#ffffff';
+            halftoneCtx.fillRect(0, 0, halftoneCanvas.width, halftoneCanvas.height);
+            
+            console.log('Canvas cleared and background set:', halftoneCanvas.width, 'x', halftoneCanvas.height);
+            
+            // Create temporary canvas for image processing
+            const tempCanvas = document.createElement('canvas');
+            const tempCtx = tempCanvas.getContext('2d');
+            tempCanvas.width = halftoneCanvas.width;
+            tempCanvas.height = halftoneCanvas.height;
+            
+            // Apply image adjustments
+            tempCtx.filter = `contrast(${params.contrast * 100}%) brightness(${100 + params.brightness}%) blur(${params.blur}px)`;
+            tempCtx.drawImage(currentImage, 0, 0, tempCanvas.width, tempCanvas.height);
+            
+            // Get image data
+            const imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
+            const data = imageData.data;
+            
+            console.log('Image data extracted:', data.length, 'bytes');
+            
+            // Apply gamma correction
+            if (params.gamma !== 1) {
+                for (let i = 0; i < data.length; i += 4) {
+                    data[i] = Math.pow(data[i] / 255, params.gamma) * 255;     // Red
+                    data[i + 1] = Math.pow(data[i + 1] / 255, params.gamma) * 255; // Green
+                    data[i + 2] = Math.pow(data[i + 2] / 255, params.gamma) * 255; // Blue
+                }
+            }
+            
+            // Generate halftone pattern
+            generateHalftonePattern(data, tempCanvas.width, tempCanvas.height, params);
+            
+            showStatus('Halftone generated successfully!', 'success');
+            
+            console.log('Canvas halftone generation complete');
+            
+        } catch (error) {
+            console.error('Error generating halftone:', error);
+            showStatus('Error generating halftone effect. Please try different settings.', 'error');
+        }
+    }
+    
+    // Generate halftone pattern based on type
+    function generateHalftonePattern(data, width, height, params) {
+        const dotSpacing = params.dotSize * params.spacing;
+        const angleRad = (params.angle * Math.PI) / 180;
+        
+        // Set dot color
+        halftoneCtx.fillStyle = params.invert ? '#ffffff' : '#000000';
+        
+        let shapesCreated = 0;
+        
+        for (let y = 0; y < height; y += dotSpacing) {
+            for (let x = 0; x < width; x += dotSpacing) {
+                // Get pixel brightness at this position
+                const pixelIndex = (Math.floor(y) * width + Math.floor(x)) * 4;
+                if (pixelIndex >= data.length) continue;
+                
+                // Calculate grayscale value
+                const r = data[pixelIndex];
+                const g = data[pixelIndex + 1];
+                const b = data[pixelIndex + 2];
+                const gray = (r + g + b) / 3;
+                
+                // Apply threshold
+                let intensity = gray > params.threshold ? gray : 0;
+                
+                // Add noise if specified
+                if (params.noise > 0) {
+                    intensity += (Math.random() - 0.5) * params.noise * 2.55;
+                    intensity = Math.max(0, Math.min(255, intensity));
+                }
+                
+                // Calculate dot size based on intensity and density
+                const normalizedIntensity = intensity / 255;
+                const dotScale = params.invert ? normalizedIntensity : (1 - normalizedIntensity);
+                const currentDotSize = params.dotSize * dotScale * (params.density / 100);
+                
+                if (currentDotSize > 0.5) {
+                    // Apply rotation and scaling
+                    halftoneCtx.save();
+                    halftoneCtx.translate(x, y);
+                    halftoneCtx.rotate(angleRad);
+                    halftoneCtx.scale(params.scaleX, params.scaleY);
+                    
+                    // Draw pattern based on type
+                    drawPattern(params.pattern, currentDotSize, halftoneCtx);
+                    
+                    halftoneCtx.restore();
+                    shapesCreated++;
+                }
+                
+                // Debug first few dots (only for first generation)
+                if (shapesCreated < 3 && !window.halftoneGenerated) {
+                    console.log(`Dot ${shapesCreated}: pos(${x},${y}), intensity=${intensity}, size=${currentDotSize}`);
+                }
+            }
+        }
+        
+        if (!window.halftoneGenerated) {
+            console.log(`Generated ${shapesCreated} shapes`);
+            window.halftoneGenerated = true;
+        }
+    }
+    
+    // Draw different pattern types
+    function drawPattern(pattern, size, ctx) {
+        const halfSize = size / 2;
+        
+        ctx.beginPath();
+        
+        switch (pattern) {
+            case 'circle':
+                ctx.arc(0, 0, halfSize, 0, Math.PI * 2);
+                break;
+                
+            case 'square':
+                ctx.rect(-halfSize, -halfSize, size, size);
+                break;
+                
+            case 'diamond':
+                ctx.moveTo(0, -halfSize);
+                ctx.lineTo(halfSize, 0);
+                ctx.lineTo(0, halfSize);
+                ctx.lineTo(-halfSize, 0);
+                ctx.closePath();
+                break;
+                
+            case 'line':
+                ctx.rect(-halfSize, -halfSize * 0.2, size, halfSize * 0.4);
+                break;
+                
+            case 'cross':
+                // Vertical line
+                ctx.rect(-halfSize * 0.2, -halfSize, halfSize * 0.4, size);
+                ctx.rect(-halfSize, -halfSize * 0.2, size, halfSize * 0.4);
+                break;
+                
+            case 'hexagon':
+                const sides = 6;
+                const radius = halfSize;
+                for (let i = 0; i < sides; i++) {
+                    const angle = (i * 2 * Math.PI) / sides;
+                    const x = radius * Math.cos(angle);
+                    const y = radius * Math.sin(angle);
+                    if (i === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                }
+                ctx.closePath();
+                break;
+                
+            default:
+                // Default to circle
+                ctx.arc(0, 0, halfSize, 0, Math.PI * 2);
+                break;
+        }
+        
+        ctx.fill();
     }
 
     // Reset all parameters to defaults
