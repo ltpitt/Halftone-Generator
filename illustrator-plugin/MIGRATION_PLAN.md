@@ -39,6 +39,89 @@ This document outlines the complete migration plan for converting the web-based 
 - Advanced layer management
 - Integration with Adobe libraries
 
+### Accessing Adobe CEP Documentation
+
+**GitHub MCP Integration**: When working in automated environments (CI/CD, coding agents), use GitHub MCP (Model Context Protocol) to fetch information from Adobe CEP repositories instead of direct HTTP requests:
+
+```javascript
+// Example: Fetching Adobe CEP Getting Started guides
+// Use github-mcp-server-get_file_contents tool
+owner: "Adobe-CEP"
+repo: "Getting-Started-guides"  
+path: "readme.md"
+```
+
+This approach bypasses firewall restrictions and provides structured access to:
+- README files and documentation
+- Code examples from sample extensions
+- manifest.xml templates
+- CSInterface.js library
+- Debugging guides
+
+**Benefits**:
+- No firewall blocking issues
+- Structured JSON responses
+- Ability to fetch specific file versions
+- Directory listings for exploration
+
+---
+
+## Development Environment and Testing Strategy
+
+### Development Without Illustrator
+
+**Key Insight**: Adobe Illustrator is **not required** for the majority of plugin development. CEP extensions are built with web technologies (HTML, CSS, JavaScript) and ExtendScript, all of which can be developed and validated without the host application.
+
+#### What Can Be Done Without Illustrator:
+1. **File Structure Creation** - All folders and files per CEP standards
+2. **manifest.xml Configuration** - XML validation against CEP schema
+3. **HTML/CSS Development** - Full panel UI development
+4. **JavaScript Development** - Panel logic, CSInterface usage
+5. **ExtendScript Development** - .jsx file creation with syntax validation
+6. **Linting and Validation** - ESLint, Stylelint, XML validation
+7. **Documentation** - User guides, API references, troubleshooting
+8. **Build Scripts** - npm scripts for packaging and validation
+9. **ZXP Package Creation** - Package generation and signing
+
+#### What Requires Illustrator (User Testing):
+1. **Loading the Extension** - Verifying it appears in Extensions menu
+2. **Runtime Behavior** - Testing actual functionality
+3. **ExtendScript Execution** - Verifying Illustrator API calls work
+4. **Visual Output** - Checking generated halftone patterns
+5. **Performance Testing** - Real-world speed with actual documents
+6. **Compatibility Testing** - Different Illustrator versions
+7. **Debug Mode Testing** - Chrome DevTools connection
+
+### CI/CD Pipeline Approach
+
+**Automated Checks (No Illustrator Needed)**:
+```yaml
+# Example GitHub Actions workflow
+- Validate manifest.xml structure
+- Lint HTML/CSS/JavaScript files
+- Validate ExtendScript syntax
+- Check file structure completeness
+- Verify icon requirements
+- Run security scans
+- Build ZXP package
+- Upload artifacts for manual testing
+```
+
+**Manual Testing Phase**:
+- Developers/users with Illustrator download artifacts
+- Follow testing checklist
+- Report results via GitHub issues
+- Provide screenshots and logs
+
+### Testing Documentation Requirements
+
+For each release, provide:
+1. **Installation Instructions** - Step-by-step with screenshots
+2. **Testing Checklist** - Feature-by-feature verification steps
+3. **Issue Reporting Template** - What info to include
+4. **System Requirements** - OS, Illustrator versions, CEP versions
+5. **Known Issues** - List of known bugs or limitations
+
 ---
 
 ## Major Phases
@@ -64,13 +147,14 @@ Based on [Adobe CEP Getting Started guides](https://github.com/Adobe-CEP/Getting
 **Reference**: [Adobe CEP Getting Started guides](https://github.com/Adobe-CEP/Getting-Started-guides)
 
 #### Tasks
-1. **Development Environment**
-   - [ ] Install Adobe Illustrator (CC 2019 or later)
-   - [ ] Set up Node.js 12+ for build tools
+1. **Development Environment Setup**
+   - [ ] Set up Node.js 12+ for build tools and automation
    - [ ] Install ZXP Sign Tool for packaging
-   - [ ] Enable CEP debugging (PlayerDebugMode registry/plist setting)
    - [ ] Set up version control for plugin directory
-   - [ ] Configure Chrome DevTools for debugging
+   - [ ] Create file structure following CEP standards
+   - [ ] Set up linting and validation tools (manifest.xml validation, HTML/CSS/JS linting)
+   
+   **Note**: Adobe Illustrator installation is **not required** for development phase. The plugin structure, manifest, HTML/CSS/JS files, and ExtendScript code can all be developed and validated without Illustrator. Testing with Illustrator will be performed by users with local installations (see Phase 6).
 
 2. **Plugin Structure** (Following CEP Standards)
    - [ ] Create extension folder in CEP extensions directory
@@ -81,12 +165,14 @@ Based on [Adobe CEP Getting Started guides](https://github.com/Adobe-CEP/Getting
    - [ ] Establish JSX interface for panel-to-host communication
    - [ ] Create .debug file for development mode
 
-3. **Development Workflow**
-   - [ ] Configure CEP debug ports (default: 8000-8999)
-   - [ ] Set up Chrome DevTools remote debugging
-   - [ ] Create npm scripts for build automation
-   - [ ] Establish hot reload workflow using file watchers
-   - [ ] Create logging infrastructure for both UI and ExtendScript
+3. **Development Workflow (Without Illustrator)**
+   - [ ] Set up manifest.xml validation (XML schema validation)
+   - [ ] Create npm scripts for file structure validation
+   - [ ] Set up HTML/CSS/JS linting (ESLint, Stylelint)
+   - [ ] Configure ExtendScript syntax checking (JSX linting)
+   - [ ] Create automated file structure checks
+   - [ ] Set up CI/CD pipeline for validation
+   - [ ] Document manual testing procedures for users with Illustrator
 
 **Key Files to Create** (per Adobe CEP standards):
 ```
@@ -99,10 +185,19 @@ icons/                    - Panel icons (normal, hover, dark themes)
 ```
 
 **Deliverables**:
-- Working plugin skeleton that loads in Illustrator
-- Basic "Hello World" with UI-to-ExtendScript communication
-- Debug configuration working with Chrome DevTools
-- Development documentation
+- Complete plugin file structure following CEP standards
+- Validated manifest.xml and .debug configuration
+- HTML/CSS/JS files passing linting
+- ExtendScript (.jsx) files with syntax validation
+- Automated validation scripts (npm test)
+- Installation and testing guide for users with Illustrator
+
+**Testing Approach**:
+- **Automated (CI/CD)**: File structure, manifest validation, linting, syntax checking
+- **Manual (User Testing)**: Loading in Illustrator, runtime behavior, visual output verification
+  - Users with Illustrator install plugin locally
+  - Follow testing procedures in documentation
+  - Report results and issues
 
 ---
 
@@ -244,38 +339,68 @@ icons/                    - Panel icons (normal, hover, dark themes)
 ### Phase 6: Polish and Testing (Week 11-12)
 **Goal**: Ensure quality, reliability, and user satisfaction
 
+**Testing Strategy**: Since Adobe Illustrator cannot be installed in CI/CD environments, testing is split between automated validation and manual user testing.
+
 #### Tasks
-1. **Comprehensive Testing**
-   - [ ] Test with various image types (JPEG, PNG, TIFF, PSD)
-   - [ ] Test with vector objects (paths, compounds, text)
-   - [ ] Test with different document sizes and resolutions
-   - [ ] Test all parameter combinations
-   - [ ] Test error scenarios (no selection, invalid objects)
-   - [ ] Performance testing with large images
+1. **Automated Validation (CI/CD)**
+   - [ ] Validate all HTML/CSS/JS files with linters
+   - [ ] Validate manifest.xml against CEP schema
+   - [ ] Check ExtendScript syntax with JSX validators
+   - [ ] Verify file structure completeness
+   - [ ] Run automated file integrity checks
+   - [ ] Validate icon files (size, format)
+   - [ ] Check for security issues (no hardcoded credentials, etc.)
 
-2. **Bug Fixes and Refinement**
-   - [ ] Fix identified bugs
-   - [ ] Optimize slow operations
-   - [ ] Improve error messages
-   - [ ] Refine UI responsiveness
+2. **Manual Testing (Requires Illustrator Installation)**
+   - [ ] **Installation Testing**:
+     - Test installation on Windows 10/11
+     - Test installation on macOS (multiple versions)
+     - Verify extension appears in Illustrator menu
+   - [ ] **Functionality Testing**:
+     - Test with various image types (JPEG, PNG, TIFF, PSD)
+     - Test with vector objects (paths, compounds, text)
+     - Test with different document sizes and resolutions
+     - Test all parameter combinations
+     - Test error scenarios (no selection, invalid objects)
+     - Performance testing with large images
+   - [ ] **Compatibility Testing**:
+     - Test on Illustrator CC 2019, 2020, 2021, 2022, 2023
+     - Verify CEP version compatibility
+     - Test on different OS versions
+   
+   **User Testing Process**:
+   - Users with Illustrator download test build
+   - Follow testing checklist provided in documentation
+   - Report results via GitHub issues or testing form
+   - Provide screenshots/screen recordings of issues
+   - Document system configuration (OS, Illustrator version, CEP version)
 
-3. **Documentation**
-   - [ ] Write user guide
-   - [ ] Create video tutorials
-   - [ ] Document technical architecture
+3. **Bug Fixes and Refinement**
+   - [ ] Fix identified bugs from user testing
+   - [ ] Optimize slow operations reported by testers
+   - [ ] Improve error messages based on feedback
+   - [ ] Refine UI responsiveness issues
+
+4. **Documentation**
+   - [ ] Write user installation guide (with screenshots)
+   - [ ] Create user guide for all features
+   - [ ] Document testing procedures for contributors
+   - [ ] Write technical architecture document
    - [ ] Write API reference for ExtendScript functions
-   - [ ] Create troubleshooting guide
-
-4. **Compatibility Testing**
-   - [ ] Test on Illustrator CC 2018, 2019, 2020, 2021, 2022, 2023
-   - [ ] Test on Windows 10/11
-   - [ ] Test on macOS (multiple versions)
-   - [ ] Verify CEP version compatibility
+   - [ ] Create troubleshooting guide (common issues from testing)
+   - [ ] Create video tutorial (optional, if possible)
 
 **Deliverables**:
-- Production-ready plugin
-- Complete documentation
-- Test reports
+- Production-ready plugin (validated via automated checks)
+- Complete documentation (installation, usage, troubleshooting)
+- Test reports from user testing
+- Known issues list (if any)
+- Testing guide for future contributors
+
+**Testing Participants**:
+- Plugin developers with Illustrator access
+- Community volunteers with various Illustrator versions
+- Beta testers from target user base
 - Known issues list
 
 ---
@@ -506,33 +631,48 @@ icons/                    - Panel icons (normal, hover, dark themes)
 
 ## Success Criteria
 
-### Functional Success
+### Development Success (Automated Validation)
+- [ ] All file structure follows CEP standards
+- [ ] manifest.xml validates against CEP schema
+- [ ] All HTML/CSS/JS files pass linting (ESLint, Stylelint)
+- [ ] ExtendScript files pass JSX syntax validation
+- [ ] ZXP package builds successfully
+- [ ] No security vulnerabilities detected
+- [ ] Complete documentation generated
+- [ ] CI/CD pipeline passes all checks
+
+### Functional Success (User Testing Required)
+- [ ] Extension loads in Illustrator without errors
 - [ ] All six pattern types working correctly
 - [ ] All parameters functional and producing expected results
 - [ ] Handles common image formats (JPEG, PNG, TIFF)
 - [ ] Works with vector and raster selections
 - [ ] Generates editable vector output in document
 - [ ] Matches web version output quality
+- [ ] Error handling works as expected
 
-### Performance Success
+### Performance Success (User Testing Required)
 - [ ] Generates 2000x2000px halftone in under 30 seconds
 - [ ] UI remains responsive during generation
 - [ ] No crashes with typical inputs
 - [ ] Memory usage stays reasonable (<500MB)
+- [ ] Progress indicators work correctly
 
-### Quality Success
-- [ ] Zero critical bugs
-- [ ] Complete documentation
-- [ ] Works on Windows and macOS
-- [ ] Compatible with Illustrator CC 2018+
-- [ ] Professional, polished appearance
+### Quality Success (Mixed Automated + User Testing)
+- [ ] Zero critical bugs (reported by testers)
+- [ ] Complete documentation (validated automatically)
+- [ ] Works on Windows and macOS (user tested)
+- [ ] Compatible with Illustrator CC 2019+ (user tested)
+- [ ] Professional, polished appearance (user tested)
+- [ ] All links in documentation work (automated check)
 
-### User Success
+### User Success (User Testing Required)
 - [ ] Intuitive for users familiar with web version
 - [ ] Clear error messages and guidance
-- [ ] Successful installations by test users
-- [ ] Positive user feedback
-- [ ] Active usage after installation
+- [ ] Successful installations by test users (minimum 3 different systems)
+- [ ] Positive user feedback (average rating >4/5)
+- [ ] No blockers preventing basic usage
+- [ ] Testing checklist completed by users
 
 ---
 
@@ -875,6 +1015,14 @@ ZXPSignCmd -selfSignedCert US CA MyCompany MyCommonName password certificate.p12
   - Extension structure and manifest configuration
   - Debugging and testing procedures
   - Packaging and distribution
+  - **Accessible via GitHub MCP** for automated information retrieval
+
+**Key Guides from Adobe CEP Getting Started**:
+- [Main Guide](https://github.com/Adobe-CEP/Getting-Started-guides/blob/master/readme.md) - 6-step tutorial for first extension
+- [Client-side Debugging](https://github.com/Adobe-CEP/Getting-Started-guides/tree/master/Client-side%20Debugging) - Chrome DevTools setup
+- [Package Distribute Install](https://github.com/Adobe-CEP/Getting-Started-guides/tree/master/Package%20Distribute%20Install) - ZXP packaging guide
+- [Exporting Files](https://github.com/Adobe-CEP/Getting-Started-guides/tree/master/Exporting%20files%20from%20the%20host%20app) - File I/O patterns
+- [Network Requests](https://github.com/Adobe-CEP/Getting-Started-guides/tree/master/Network%20requests%20and%20responses%20with%20Fetch) - API communication
 
 **Additional Adobe Resources:**
 - [CEP Resources Repository](https://github.com/Adobe-CEP/CEP-Resources) - Sample extensions and documentation
@@ -890,7 +1038,9 @@ ZXPSignCmd -selfSignedCert US CA MyCompany MyCommonName password certificate.p12
 **Tools:**
 - [ZXPSignCmd](https://github.com/Adobe-Distribute/ZXPSignCMD) - Command-line signing tool
 - [Anastasiy's Extension Manager](https://install.anastasiy.com/) - Extension installer for testing
-- Chrome DevTools - For debugging panel JavaScript
+- Chrome DevTools - For debugging panel JavaScript (requires Illustrator + debug mode)
+
+**Note on GitHub MCP**: When fetching information from Adobe CEP repositories, use the GitHub MCP (Model Context Protocol) tools instead of direct HTTP requests, as this bypasses firewall restrictions in the coding environment.
 
 ### Contact and Support
 - Project Repository: https://github.com/ltpitt/Halftone-Generator
