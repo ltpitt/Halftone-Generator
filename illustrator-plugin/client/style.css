@@ -287,7 +287,7 @@ input[type="range"]::-moz-range-thumb:hover {
     z-index: 100;
 }
 
-.mode-indicator.demo-mode {
+.mode-indicator.test-mode {
     background-color: #0066CC;
     color: white;
 }
@@ -322,7 +322,7 @@ input[type="range"]::-moz-range-thumb:hover {
     background-color: #5A5A5A;
 }
 
-.demo-note {
+.test-note {
     font-size: 10px;
     color: #B8B8B8;
     font-style: italic;
