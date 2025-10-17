@@ -271,8 +271,8 @@ input[type="range"]::-moz-range-thumb:hover {
     display: block;
 }
 
-/* Demo Mode Styles */
-.demo-only {
+/* Test Mode Styles */
+.test-only {
     display: none;
 }
 
