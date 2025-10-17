@@ -57,10 +57,10 @@ class HalftoneGeneratorPage {
     this.noiseValue = page.locator('#noiseValue');
     this.invertCheckbox = page.locator('#invert');
     
-    // Demo mode elements
+    // Test mode elements
     this.imageInput = page.locator('#imageInput');
-    this.demoFileSection = page.locator('#demoFileSection');
-    this.demoCanvasSection = page.locator('#demoCanvasSection');
+    this.testFileSection = page.locator('#testFileSection');
+    this.testCanvasSection = page.locator('#testCanvasSection');
     this.canvas = page.locator('#halftoneCanvas');
     this.canvasOverlay = page.locator('#canvasOverlay');
     this.outputInfo = page.locator('#outputInfo');
@@ -141,7 +141,7 @@ class HalftoneGeneratorPage {
   }
   
   /**
-   * Upload an image file in demo mode
+   * Upload an image file in test mode
    * @param {string} filePath - Path to the image file
    */
   async uploadImage(filePath) {
@@ -163,11 +163,11 @@ class HalftoneGeneratorPage {
   }
   
   /**
-   * Check if the page is in demo mode
-   * @returns {Promise<boolean>} True if in demo mode
+   * Check if the page is in test mode
+   * @returns {Promise<boolean>} True if in test mode
    */
-  async isInDemoMode() {
-    const isVisible = await this.demoFileSection.isVisible();
+  async isInTestMode() {
+    const isVisible = await this.testFileSection.isVisible();
     return isVisible;
   }
   

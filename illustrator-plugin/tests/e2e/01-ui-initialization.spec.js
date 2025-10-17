@@ -23,22 +23,22 @@ test.describe('UI Initialization', () => {
     await expect(page.locator('h1')).toContainText('Halftone Generator');
   });
 
-  test('should be in demo mode', async () => {
-    const isDemoMode = await halftoneGenerator.isInDemoMode();
-    expect(isDemoMode).toBe(true);
+  test('should be in test mode', async () => {
+    const isTestMode = await halftoneGenerator.isInTestMode();
+    expect(isTestMode).toBe(true);
   });
 
-  test('should show demo mode indicator', async () => {
+  test('should show test mode indicator', async () => {
     const isVisible = await halftoneGenerator.isModeIndicatorVisible();
     expect(isVisible).toBe(true);
     
     const modeText = await halftoneGenerator.getModeText();
-    expect(modeText).toContain('Demo Mode');
+    expect(modeText).toContain('Test Mode');
   });
 
-  test('should display demo-only sections', async () => {
-    await expect(halftoneGenerator.demoFileSection).toBeVisible();
-    await expect(halftoneGenerator.demoCanvasSection).toBeVisible();
+  test('should display test-only sections', async () => {
+    await expect(halftoneGenerator.testFileSection).toBeVisible();
+    await expect(halftoneGenerator.testCanvasSection).toBeVisible();
   });
 
   test('should display canvas element', async () => {
@@ -51,7 +51,7 @@ test.describe('UI Initialization', () => {
     expect(parseInt(height)).toBeGreaterThan(0);
   });
 
-  test('should auto-load example image in demo mode', async () => {
+  test('should auto-load example image in test mode', async () => {
     // Wait for canvas to render
     await halftoneGenerator.waitForCanvasRender();
     

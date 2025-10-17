@@ -14,7 +14,7 @@ test.describe('Image Upload and Processing', () => {
     await halftoneGenerator.waitForLoad();
   });
 
-  test('should have image input visible in demo mode', async () => {
+  test('should have image input visible in test mode', async () => {
     await expect(halftoneGenerator.imageInput).toBeAttached();
   });
 
