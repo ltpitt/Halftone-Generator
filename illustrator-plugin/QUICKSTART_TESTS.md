@@ -48,7 +48,7 @@ npx playwright test tests/e2e/01-ui-initialization.spec.js:16
 
 ## What's Tested
 
-### Demo Mode Features
+### Test Mode Features
 - ✅ UI loads correctly
 - ✅ Auto-loads example image
 - ✅ All 6 pattern types (circle, square, diamond, line, cross, hexagon)

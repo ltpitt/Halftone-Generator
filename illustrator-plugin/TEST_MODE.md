@@ -1,8 +1,8 @@
-# Demo Mode Guide
+# Test Mode Guide
 
 ## Overview
 
-The Halftone Generator plugin includes a **Demo Mode** that allows you to test and explore the plugin's functionality without requiring Adobe Illustrator. This mode runs entirely in a web browser and provides the same user interface and halftone generation capabilities.
+The Halftone Generator plugin includes a **Test Mode** that allows you to test and explore the plugin's functionality without requiring Adobe Illustrator. This mode runs entirely in a web browser and provides the same user interface and halftone generation capabilities.
 
 ## Quick Start
 
@@ -38,9 +38,9 @@ npm run serve
 # Visit: http://localhost:8000
 ```
 
-## Demo Mode Features
+## Test Mode Features
 
-### ✅ What Works in Demo Mode
+### ✅ What Works in Test Mode
 
 **Complete UI Experience**:
 - Example image automatically loads for immediate testing
@@ -67,10 +67,10 @@ npm run serve
 - Performance testing with different image sizes
 - Cross-browser compatibility testing
 
-### ❌ What Doesn't Work in Demo Mode
+### ❌ What Doesn't Work in Test Mode
 
 **Illustrator-Specific Features**:
-- Vector shape creation (demo uses canvas rendering)
+- Vector shape creation (test mode uses canvas rendering)
 - Integration with Illustrator documents
 - Object selection from Illustrator artboards
 - ExtendScript communication
@@ -84,8 +84,8 @@ npm run serve
 
 The plugin automatically detects its environment:
 
-**Demo Mode Indicators**:
-- Blue header bar saying "Running in Demo Mode (Browser)"
+**Test Mode Indicators**:
+- Blue header bar saying "Running in Test Mode (Browser)"
 - File upload section is visible
 - Canvas preview area is displayed
 
@@ -97,8 +97,8 @@ The plugin automatically detects its environment:
 ## Testing Scenarios
 
 ### Basic Functionality Test
-1. Open demo mode in browser
-2. Verify UI loads correctly with demo mode indicator
+1. Open test mode in browser
+2. Verify UI loads correctly with test mode indicator
 3. Upload a test image (PNG or JPG)
 4. Try different pattern types (Circle, Square, etc.)
 5. Adjust parameters and observe real-time updates
@@ -143,14 +143,14 @@ The plugin automatically detects its environment:
 
 ## Automated Testing
 
-Demo mode enables comprehensive automated testing:
+Test mode enables comprehensive automated testing:
 
 ```bash
-# Run all tests including demo validation
+# Run all tests including test mode validation
 npm test
 
-# Run only demo mode tests
-npm run test:demo
+# Run only test mode tests
+npm run test:test-mode
 
 # Validate plugin structure  
 npm run validate
@@ -158,7 +158,7 @@ npm run validate
 
 ## Browser Compatibility
 
-Demo mode is tested and works in:
+Test mode is tested and works in:
 - ✅ Chrome/Chromium (Recommended)
 - ✅ Safari  
 - ✅ Firefox
@@ -184,9 +184,9 @@ Demo mode is tested and works in:
 
 ## Next Steps
 
-After testing in demo mode:
+After testing in test mode:
 1. **For Users**: Install the full plugin in Illustrator ([INSTALLATION.md](./INSTALLATION.md))
 2. **For Developers**: See [CONTRIBUTING.md](./CONTRIBUTING.md) for development setup
 3. **For Testing**: Follow [TESTING.md](./TESTING.md) for comprehensive testing procedures
 
-Demo mode provides an excellent way to explore the plugin's capabilities and ensure everything works as expected before moving to the full Illustrator integration.
+Test mode provides an excellent way to explore the plugin's capabilities and ensure everything works as expected before moving to the full Illustrator integration.

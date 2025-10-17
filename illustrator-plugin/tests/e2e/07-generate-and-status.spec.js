@@ -98,7 +98,7 @@ test.describe('Generate Button and Status Messages', () => {
     expect(hasContent).toBe(true);
   });
 
-  test('should update output info in demo mode', async () => {
+  test('should update output info in test mode', async () => {
     // Generate halftone
     await halftoneGenerator.clickGenerate();
     await page.waitForTimeout(TEST_TIMEOUTS.STANDARD_WAIT);

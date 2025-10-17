@@ -2,7 +2,7 @@
 
 ## Overview
 
-This directory contains a comprehensive end-to-end (e2e) test suite for the Halftone Generator Illustrator plugin using Playwright. The tests are designed to validate the plugin's demo mode functionality through automated browser testing.
+This directory contains a comprehensive end-to-end (e2e) test suite for the Halftone Generator Illustrator plugin using Playwright. The tests are designed to validate the plugin's test mode functionality through automated browser testing.
 
 ## Architecture
 
@@ -68,7 +68,7 @@ The `HalftoneGeneratorPage` class encapsulates all interactions with the UI:
 ### 01-ui-initialization.spec.js
 Tests basic UI loading and initialization:
 - Page loads successfully
-- Demo mode is detected
+- Test mode is detected
 - All UI sections are visible
 - Canvas auto-loads example image
 - Default pattern is selected

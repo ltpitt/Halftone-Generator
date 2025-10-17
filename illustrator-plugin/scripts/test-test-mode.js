@@ -1,30 +1,30 @@
 #!/usr/bin/env node
 
 /**
- * Demo Mode Test Script
- * Tests the plugin's demo mode functionality without requiring Illustrator
+ * Test Mode Test Script
+ * Tests the plugin's test mode functionality without requiring Illustrator
  */
 
 const fs = require('fs');
 const path = require('path');
 
-console.log('🧪 Testing Demo Mode Functionality...\n');
+console.log('🧪 Testing Test Mode Functionality...\n');
 
 // Test 1: HTML Structure
 console.log('1. Testing HTML structure...');
 const htmlPath = path.join(__dirname, '../client/index.html');
 const htmlContent = fs.readFileSync(htmlPath, 'utf8');
 
-// Check for demo mode elements
-const demoElements = [
-    'id="demoFileSection"',
-    'id="demoCanvasSection"', 
+// Check for test mode elements
+const testElements = [
+    'id="testFileSection"',
+    'id="testCanvasSection"', 
     'id="modeIndicator"',
     'id="halftoneCanvas"',
     'id="imageInput"'
 ];
 
-demoElements.forEach(element => {
+testElements.forEach(element => {
     if (htmlContent.includes(element)) {
         console.log(`   ✓ ${element} found`);
     } else {
@@ -33,19 +33,19 @@ demoElements.forEach(element => {
     }
 });
 
-// Test 2: CSS Demo Styles
-console.log('\n2. Testing CSS demo mode styles...');
+// Test 2: CSS Test Styles
+console.log('\n2. Testing CSS test mode styles...');
 const cssPath = path.join(__dirname, '../client/style.css');
 const cssContent = fs.readFileSync(cssPath, 'utf8');
 
-const demoStyles = [
-    '.demo-only',
+const testStyles = [
+    '.test-only',
     '.mode-indicator',
     '.canvas-container',
     '.file-input'
 ];
 
-demoStyles.forEach(style => {
+testStyles.forEach(style => {
     if (cssContent.includes(style)) {
         console.log(`   ✓ ${style} found`);
     } else {
@@ -54,12 +54,12 @@ demoStyles.forEach(style => {
     }
 });
 
-// Test 3: JavaScript Demo Functions
-console.log('\n3. Testing JavaScript demo mode functions...');
+// Test 3: JavaScript Test Functions
+console.log('\n3. Testing JavaScript test mode functions...');
 const jsPath = path.join(__dirname, '../client/script.js');
 const jsContent = fs.readFileSync(jsPath, 'utf8');
 
-const demoFunctions = [
+const testFunctions = [
     'isIllustratorMode',
     'setupModeUI',
     'initializeCanvas',
@@ -69,7 +69,7 @@ const demoFunctions = [
     'drawPattern'
 ];
 
-demoFunctions.forEach(func => {
+testFunctions.forEach(func => {
     if (jsContent.includes(func)) {
         console.log(`   ✓ ${func} found`);
     } else {
@@ -107,7 +107,7 @@ if (jsContent.includes('if (isIllustratorMode)') &&
 }
 
 // Test 6: File Structure Validation
-console.log('\n6. Validating demo mode file accessibility...');
+console.log('\n6. Validating test mode file accessibility...');
 const requiredFiles = [
     '../client/index.html',
     '../client/style.css', 
@@ -126,16 +126,16 @@ requiredFiles.forEach(file => {
     }
 });
 
-console.log('\n🎉 All demo mode tests passed!');
+console.log('\n🎉 All test mode tests passed!');
 console.log('\n📋 Test Summary:');
-console.log('   ✅ HTML demo elements present');  
-console.log('   ✅ CSS demo styles available');
-console.log('   ✅ JavaScript demo functions implemented');
+console.log('   ✅ HTML test elements present');  
+console.log('   ✅ CSS test styles available');
+console.log('   ✅ JavaScript test functions implemented');
 console.log('   ✅ Environment detection working');
 console.log('   ✅ Dual mode generation logic active');
 console.log('   ✅ All required files accessible');
 console.log('   ✅ Example image available for auto-loading');
 
-console.log('\n🚀 Demo mode is ready for testing!');
+console.log('\n🚀 Test mode is ready for testing!');
 console.log('   Run: open client/index.html');
 console.log('   Or:  npm run serve');

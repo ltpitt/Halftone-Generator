@@ -6,20 +6,20 @@ This guide provides comprehensive testing procedures for the Halftone Generator 
 
 The plugin supports **dual-mode operation**:
 
-1. **Demo Mode** (Browser) - Full UI testing and halftone preview without Illustrator
+1. **Test Mode** (Browser) - Full UI testing and halftone preview without Illustrator
 2. **Production Mode** (Illustrator) - Full plugin functionality within Illustrator
 
 This enables extensive testing without requiring Adobe Illustrator installation.
 
 ## Testing Categories
 
-1. **Demo Mode Testing** - Browser-based testing, no Illustrator required
+1. **Test Mode Testing** - Browser-based testing, no Illustrator required
 2. **Automated Validation** - Runs in CI/CD, no Illustrator required  
 3. **Manual Testing** - Requires Illustrator installation
 
-## Demo Mode Testing (Browser-Based)
+## Test Mode Testing (Browser-Based)
 
-### Quick Start - Demo Mode
+### Quick Start - Test Mode
 
 1. **Open in Browser**:
    ```bash
@@ -33,7 +33,7 @@ This enables extensive testing without requiring Adobe Illustrator installation.
    ```
 
 2. **Test Basic Functionality**:
-   - Plugin loads with "Running in Demo Mode" indicator
+   - Plugin loads with "Running in Test Mode" indicator
    - Example image automatically loads and displays halftone
    - File upload section is visible
    - Canvas preview area shows live halftone effect
@@ -45,7 +45,7 @@ This enables extensive testing without requiring Adobe Illustrator installation.
    - Load a custom test image (PNG/JPG) via file upload
    - Verify both auto-loaded and custom images work correctly
 
-### Demo Mode Features
+### Test Mode Features
 
 **✅ What Works**:
 - Complete UI functionality
@@ -60,14 +60,14 @@ This enables extensive testing without requiring Adobe Illustrator installation.
 - Integration with Illustrator documents
 - ExtendScript communication
 
-### Automated Testing with Demo Mode
+### Automated Testing with Test Mode
 
 ```bash
 # Run structure validation
 npm run validate:structure
 
-# Test demo mode in headless browser (if configured)
-npm run test:demo
+# Test test mode in headless browser (if configured)
+npm run test:test-mode
 
 # Run all automated tests
 npm test

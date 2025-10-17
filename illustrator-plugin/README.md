@@ -72,21 +72,21 @@ illustrator-plugin/
 └── README.md                 # This file
 ```
 
-## Demo Mode 🌐
+## Test Mode 🌐
 
 **Try the plugin without Adobe Illustrator!**
 
-The plugin includes a **Demo Mode** that runs in any web browser, enabling:
+The plugin includes a **Test Mode** that runs in any web browser, enabling:
 - ✅ Full UI testing and interaction
 - ✅ Image loading and halftone generation
 - ✅ Real-time parameter adjustments with canvas preview
 - ✅ All pattern types and effects
 - ✅ Complete feature exploration
 
-### Quick Demo
+### Quick Test
 
 ```bash
-# Open demo mode in browser
+# Open test mode in browser
 open client/index.html
 
 # Or serve with local server (recommended)
@@ -95,10 +95,10 @@ python3 -m http.server 8000
 # Visit: http://localhost:8000
 ```
 
-**Instant Preview**: Demo mode automatically loads an example image so you can immediately see halftone effects and experiment with all parameters!
+**Instant Preview**: Test mode automatically loads an example image so you can immediately see halftone effects and experiment with all parameters!
 
-**Demo vs Production**:
-- **Demo Mode**: Canvas-based preview, image file upload, browser testing
+**Test vs Production**:
+- **Test Mode**: Canvas-based preview, image file upload, browser testing
 - **Production Mode**: Vector shape creation, Illustrator object selection, full plugin functionality
 
 This enables extensive development and testing without requiring Adobe Illustrator installation.
@@ -107,7 +107,7 @@ This enables extensive development and testing without requiring Adobe Illustrat
 
 ### For Users (Testing)
 
-**Option 1: Demo Mode** (No Illustrator Required)
+**Option 1: Test Mode** (No Illustrator Required)
 ```bash
 open client/index.html  # Opens in default browser
 ```
@@ -116,9 +116,9 @@ open client/index.html  # Opens in default browser
 See [QUICKSTART.md](./QUICKSTART.md) for installation and usage instructions.
 
 Detailed guides:
-- [DEMO_MODE.md](./DEMO_MODE.md) - Complete demo mode guide and testing
+- [TEST_MODE.md](./TEST_MODE.md) - Complete test mode guide and testing
 - [INSTALLATION.md](./INSTALLATION.md) - Complete installation guide  
-- [TESTING.md](./TESTING.md) - Testing procedures including demo mode
+- [TESTING.md](./TESTING.md) - Testing procedures including test mode
 
 ### For Developers (Contributing)
 

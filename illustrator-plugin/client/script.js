@@ -19,7 +19,7 @@
         csInterface.getOSInformation();
         isIllustratorMode = true;
     } catch (e) {
-        console.log('CSInterface not available - running in demo mode');
+        console.log('CSInterface not available - running in test mode');
         isIllustratorMode = false;
     }
 
@@ -70,10 +70,10 @@
         // Status
         status: document.getElementById('status'),
         
-        // Demo mode elements
+        // Test mode elements
         imageInput: document.getElementById('imageInput'),
-        demoFileSection: document.getElementById('demoFileSection'),
-        demoCanvasSection: document.getElementById('demoCanvasSection'),
+        testFileSection: document.getElementById('testFileSection'),
+        testCanvasSection: document.getElementById('testCanvasSection'),
         modeIndicator: document.getElementById('modeIndicator'),
         modeText: document.getElementById('modeText'),
         canvasOverlay: document.getElementById('canvasOverlay'),
@@ -111,10 +111,10 @@
         // Update initial values
         updateAllValueDisplays();
         
-        // Initialize canvas if in demo mode
+        // Initialize canvas if in test mode
         if (!isIllustratorMode) {
             initializeCanvas();
-            // Auto-load example image in demo mode
+            // Auto-load example image in test mode
             loadExampleImage();
         }
         
@@ -126,26 +126,26 @@
         if (isIllustratorMode) {
             // Hide mode indicator entirely for professional Illustrator users
             elements.modeIndicator.style.display = 'none';
-            // Hide demo-only elements
-            elements.demoFileSection.style.display = 'none';
-            elements.demoCanvasSection.style.display = 'none';
+            // Hide test-only elements
+            elements.testFileSection.style.display = 'none';
+            elements.testCanvasSection.style.display = 'none';
         } else {
-            // Demo mode can mention it's a demo since it's browser-based
-            elements.modeText.textContent = 'Demo Mode - Try the live preview!';
-            elements.modeIndicator.className = 'mode-indicator demo-mode';
+            // Test mode can mention it's a test since it's browser-based
+            elements.modeText.textContent = 'Test Mode - Try the live preview!';
+            elements.modeIndicator.className = 'mode-indicator test-mode';
             elements.modeIndicator.style.display = 'block';
-            // Show demo-only elements
-            elements.demoFileSection.style.display = 'block';
-            elements.demoCanvasSection.style.display = 'block';
+            // Show test-only elements
+            elements.testFileSection.style.display = 'block';
+            elements.testCanvasSection.style.display = 'block';
         }
     }
     
-    // Initialize canvas for demo mode
+    // Initialize canvas for test mode
     function initializeCanvas() {
         halftoneCanvas = document.getElementById('halftoneCanvas');
         if (halftoneCanvas) {
             halftoneCtx = halftoneCanvas.getContext('2d');
-            console.log('Canvas initialized for demo mode');
+            console.log('Canvas initialized for test mode');
         }
     }
 
@@ -170,7 +170,7 @@
         sliders.forEach(function(slider) {
             slider.element.addEventListener('input', function() {
                 updateValueDisplay(slider.element, slider.display, slider.suffix);
-                // Real-time preview in demo mode with debouncing
+                // Real-time preview in test mode with debouncing
                 if (!isIllustratorMode && currentImage) {
                     clearTimeout(updateTimeout);
                     updateTimeout = setTimeout(function() {
@@ -186,12 +186,12 @@
         // Reset button
         elements.resetBtn.addEventListener('click', resetToDefaults);
         
-        // Demo mode file input
+        // Test mode file input
         if (!isIllustratorMode && elements.imageInput) {
             elements.imageInput.addEventListener('change', handleFileSelect);
         }
         
-        // Real-time preview for pattern changes (demo mode only)
+        // Real-time preview for pattern changes (test mode only)
         if (!isIllustratorMode) {
             elements.patternRadios.forEach(function(radio) {
                 radio.addEventListener('change', function() {
@@ -332,7 +332,7 @@
                 }
             });
         } else {
-            // Demo mode - generate on canvas
+            // Test mode - generate on canvas
             if (currentImage) {
                 generateHalftoneCanvas(params);
             } else {
@@ -360,10 +360,10 @@
     }
 
     // ===============================
-    // DEMO MODE FUNCTIONS
+    // TEST MODE FUNCTIONS
     // ===============================
     
-    // Load example image automatically in demo mode
+    // Load example image automatically in test mode
     function loadExampleImage() {
         const exampleImagePath = 'test-image.jpg';
         
@@ -386,7 +386,7 @@
         };
         
         img.onerror = () => {
-            console.log('Example image not found, demo mode will wait for user upload');
+            console.log('Example image not found, test mode will wait for user upload');
             // Show overlay with instructions
             if (elements.canvasOverlay) {
                 elements.canvasOverlay.innerHTML = '<p>Load an image to see preview<br><small>Click "Choose Image File" above</small></p>';
@@ -397,7 +397,7 @@
         img.src = exampleImagePath;
     }
     
-    // Handle file selection in demo mode
+    // Handle file selection in test mode
     function handleFileSelect(e) {
         const file = e.target.files[0];
         if (file) {
@@ -477,7 +477,7 @@
         }
     }
     
-    // Generate halftone on canvas (demo mode)
+    // Generate halftone on canvas (test mode)
     function generateHalftoneCanvas(params) {
         if (!currentImage || !halftoneCanvas || !halftoneCtx) {
             showStatus('No image loaded. Please select an image first.', 'warning');
