@@ -10,7 +10,8 @@
   
   <ExecutionEnvironment>
     <HostList>
-      <!-- Illustrator CC 2019 and later -->
+      <!-- Illustrator CC 2019 (v23) through 2021+ (v25+) -->
+      <!-- v23-24: CEP 9, v25: CEP 10/11, v29+: CEP 12 -->
       <Host Name="ILST" Version="[23.0,99.9]"/>
     </HostList>
     
@@ -19,6 +20,10 @@
     </LocaleList>
     
     <RequiredRuntimeList>
+      <!-- Support CEP 9, 10, and 11 for maximum compatibility -->
+      <!-- CEP 9: Illustrator 2019-2020 (v23-24) -->
+      <!-- CEP 10: Illustrator 2021 (v25.0) -->
+      <!-- CEP 11: Illustrator 2021+ (v25.3+) -->
       <RequiredRuntime Name="CSXS" Version="9.0"/>
     </RequiredRuntimeList>
   </ExecutionEnvironment>

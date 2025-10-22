@@ -12,16 +12,33 @@
     let halftoneCtx = null;
     let updateTimeout = null;
 
+    // Environment detection with detailed logging
+    console.log('=== Environment Detection ===');
+    console.log('typeof CSInterface:', typeof CSInterface);
+    console.log('window.__adobe_cep__ exists:', typeof window.__adobe_cep__ !== 'undefined');
+    
     // Try to initialize CEP interface
     try {
         csInterface = new CSInterface();
-        // Test if CSInterface is working
-        csInterface.getOSInformation();
+        
+        // Test if CSInterface is working - getOSInformation() should work in CEP environment
+        const osInfo = csInterface.getOSInformation();
+        console.log('OS Information:', osInfo);
+        
+        // Also get host environment for additional confirmation
+        const hostEnv = csInterface.getHostEnvironment();
+        console.log('Host Application:', hostEnv.appName, hostEnv.appVersion);
+        
         isIllustratorMode = true;
+        console.log('✓ Running in Illustrator mode');
     } catch (e) {
-        console.log('CSInterface not available - running in demo mode');
+        console.log('CSInterface not available:', e.message);
+        console.log('✓ Running in demo mode (browser)');
         isIllustratorMode = false;
     }
+    
+    console.log('Mode:', isIllustratorMode ? 'Illustrator' : 'Demo');
+    console.log('=== End Detection ===');
 
     // Get all UI elements
     const elements = {

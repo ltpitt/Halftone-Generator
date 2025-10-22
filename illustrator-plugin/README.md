@@ -65,12 +65,14 @@ illustrator-plugin/
 │   ├── style.css             # Panel styling
 │   ├── script.js             # Panel logic
 │   └── lib/
-│       └── CSInterface.js    # Adobe CEP library
+│       └── CSInterface.js    # Adobe CEP library (official from Adobe)
 ├── icons/                    # Plugin icons
 ├── .debug                    # Debug configuration
 ├── package.json              # Build configuration
 └── README.md                 # This file
 ```
+
+> **Important**: `CSInterface.js` is the official Adobe CEP library downloaded from [Adobe-CEP/CEP-Resources](https://github.com/Adobe-CEP/CEP-Resources). It should never be modified or replaced with custom code. The plugin uses CEP 9 (v9.4.0) for compatibility with Illustrator CC 2019+.
 
 ## Demo Mode 🌐
 
