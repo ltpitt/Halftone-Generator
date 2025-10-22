@@ -35,9 +35,35 @@ open web-app/index.html
 ```bash
 cd illustrator-plugin
 npm install
-npm run plugin:install  # Automated installation
+npm run plugin:setup  # Automated installation and setup
 # Restart Illustrator, then go to Window → Extensions → Halftone Generator
 ```
+
+#### Available Plugin Scripts
+
+**Installation & Management:**
+- `npm run plugin:help` - Display help and usage information
+- `npm run plugin:setup` - Complete installation (install + instructions)
+- `npm run plugin:install` - Install plugin to CEP extensions folder
+- `npm run plugin:uninstall` - Remove plugin from CEP extensions folder
+- `npm run plugin:reinstall` - Uninstall then reinstall (useful after changes)
+- `npm run plugin:status` - Check if plugin is installed and show file details
+
+**Development:**
+- `npm run plugin:dev` - Enable debug mode for plugin development
+- `npm run plugin:watch` - Watch for changes and auto-reinstall (requires separate terminal)
+
+**Testing:**
+- `npm test` - Run all tests (validation + demo + E2E)
+- `npm run validate` - Validate plugin structure and manifest
+- `npm run test:demo` - Test demo mode functionality
+- `npm run test:e2e` - Run end-to-end tests with Playwright
+- `npm run test:e2e:ui` - Run E2E tests with Playwright UI
+- `npm run test:e2e:debug` - Run E2E tests in debug mode
+
+**Demo/Development Server:**
+- `npm run serve` - Start local web server on port 8000 for testing UI
+
 See the [Illustrator Plugin README](./illustrator-plugin/README.md) for detailed instructions.
 
 ## ✨ Features
