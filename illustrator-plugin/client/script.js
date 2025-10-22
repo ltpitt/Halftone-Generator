@@ -1,8 +1,12 @@
 // Halftone Generator - Client-side Panel Script
 // This handles the UI logic and communicates with ExtendScript
 
+console.log('🔍 Script loading started...');
+
 (function() {
     'use strict';
+    
+    console.log('🔍 Inside main function scope...');
 
     // Environment detection
     let isIllustratorMode = false;
@@ -176,8 +180,12 @@
             elements.demoFileSection.style.display = 'none';
             elements.demoCanvasSection.style.display = 'none';
             
-            // Show CEP-specific status
-            elements.status.textContent = 'Ready to generate halftone patterns in Illustrator';
+            // Show CEP-specific status with debug info
+            let debugInfo = '';
+            if (csInterface && csInterface.hostEnvironment) {
+                debugInfo = ` (${csInterface.hostEnvironment.appName} v${csInterface.hostEnvironment.appVersion})`;
+            }
+            elements.status.textContent = 'Ready to generate halftone patterns in Illustrator' + debugInfo;
             elements.status.className = 'status-message success';
         } else {
             console.log('🌐 Browser demo mode - showing demo elements');
@@ -361,7 +369,14 @@
         if (isIllustratorMode) {
             // Illustrator mode - call ExtendScript
             const paramsJSON = JSON.stringify(params);
-            const script = 'generateHalftone(' + paramsJSON + ')';
+            
+            // IMPORTANT: Escape the JSON string properly for ExtendScript
+            // We need to escape backslashes and quotes
+            const escapedJSON = paramsJSON.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+            const script = "generateHalftone('" + escapedJSON + "')";
+            
+            // Show diagnostic info
+            showStatus('Calling generateHalftone...', 'info');
             
             csInterface.evalScript(script, function(result) {
                 console.log('ExtendScript result:', result);
@@ -371,7 +386,12 @@
                 elements.generateBtn.textContent = 'Generate Halftone';
                 
                 if (result === 'EvalScript error.') {
-                    showStatus('Error: ExtendScript execution failed', 'error');
+                    showStatus('Error: ExtendScript execution failed - function not found or syntax error', 'error');
+                    return;
+                }
+                
+                if (!result || result.trim() === '') {
+                    showStatus('Error: ExtendScript returned empty result', 'error');
                     return;
                 }
                 
@@ -379,13 +399,14 @@
                     const resultData = JSON.parse(result);
                     
                     if (resultData.success) {
-                        showStatus('Halftone generated successfully! Created ' + resultData.shapesCreated + ' shapes.', 'success');
+                        showStatus('Success: ' + (resultData.message || 'Halftone generated'), 'success');
                     } else {
                         showStatus('Error: ' + resultData.error, 'error');
                     }
                 } catch (e) {
-                    console.error('Error parsing result:', e);
-                    showStatus('Error: Invalid response from ExtendScript', 'error');
+                    console.error('JSON Parse Error:', e);
+                    console.error('Raw result:', result);
+                    showStatus('Parse Error: ' + e.message, 'error');
                 }
             });
         } else {

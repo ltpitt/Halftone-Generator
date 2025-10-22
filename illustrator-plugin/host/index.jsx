@@ -1,50 +1,94 @@
 // Halftone Generator - ExtendScript Host Script
 // This runs in Illustrator and handles the actual halftone generation
 
+// TEST 1: Absolute simplest function
+function testBasic() {
+    return "TEST_SUCCESS";
+}
+
+// TEST 2: Simple JSON.parse test
+if (typeof JSON === 'undefined') {
+    JSON = {
+        parse: function(str) {
+            return eval('(' + str + ')');
+        }
+    };
+}
+
 // Main function called from the panel
 function generateHalftone(paramsJSON) {
     try {
+        // Parse the parameters
         var params = JSON.parse(paramsJSON);
         
         // Check if there's an active document
         if (app.documents.length === 0) {
-            return JSON.stringify({
-                success: false,
-                error: 'No active document. Please open or create a document.'
-            });
+            return '{"success":false,"error":"No active document. Please open or create a document."}';
         }
         
         var doc = app.activeDocument;
         
         // Check if there's a selection
         if (doc.selection.length === 0) {
-            return JSON.stringify({
-                success: false,
-                error: 'No object selected. Please select an image or object to apply halftone effect.'
-            });
+            return '{"success":false,"error":"No object selected. Please select an image or object to apply halftone effect."}';
         }
         
         var selectedItem = doc.selection[0];
         
-        // Get image data from selection
-        var imageData = extractImageData(selectedItem, params);
-        if (!imageData.success) {
-            return JSON.stringify({
-                success: false,
-                error: imageData.error
-            });
+        // Get bounds of selected item
+        var bounds = selectedItem.geometricBounds;
+        var width = bounds[2] - bounds[0];
+        var height = bounds[1] - bounds[3];
+        
+        // Create a new layer for halftone
+        var halftoneLayer = doc.layers.add();
+        halftoneLayer.name = "Halftone Pattern";
+        
+        // Simple halftone generation - create circles in a grid
+        var spacing = params.spacing || 15;
+        var dotSize = params.dotSize || 10;
+        var cols = Math.floor(width / spacing);
+        var rows = Math.floor(height / spacing);
+        var shapesCreated = 0;
+        
+        // Create halftone dots
+        for (var row = 0; row < rows; row++) {
+            for (var col = 0; col < cols; col++) {
+                var x = bounds[0] + (col * spacing) + (spacing / 2);
+                var y = bounds[1] - (row * spacing) - (spacing / 2);
+                
+                // Create a circle
+                var circle = halftoneLayer.pathItems.ellipse(y + dotSize/2, x - dotSize/2, dotSize, dotSize);
+                circle.filled = true;
+                circle.fillColor = doc.swatches[2].color; // Black
+                circle.stroked = false;
+                
+                shapesCreated++;
+            }
         }
         
-        // Generate halftone pattern
-        var result = createHalftonePattern(doc, imageData, params);
+        // Return success with parameters received
+        return '{"success":true,"message":"Created ' + shapesCreated + ' halftone dots (' + cols + 'x' + rows + ' grid)"}';
         
-        return JSON.stringify(result);
+        // Check if there's an active document
+        if (app.documents.length === 0) {
+            return '{"success":false,"error":"No active document. Please open or create a document."}';
+        }
+        
+        var doc = app.activeDocument;
+        
+        // Check if there's a selection
+        if (doc.selection.length === 0) {
+            return '{"success":false,"error":"No object selected. Please select an image or object to apply halftone effect."}';
+        }
+        
+        var selectedItem = doc.selection[0];
+        
+        // Temporary: Skip complex functions to test basic structure
+        return '{"success":true,"message":"Basic ExtendScript function is working! Selected: ' + selectedItem.typename + '"}';
         
     } catch (error) {
-        return JSON.stringify({
-            success: false,
-            error: error.toString()
-        });
+        return '{"success":false,"error":"' + error.toString() + '"}';
     }
 }
 
@@ -52,7 +96,7 @@ function generateHalftone(paramsJSON) {
 function extractImageData(item, params) {
     try {
         // For now, we'll work with the item's bounds
-        var bounds = item.geometricBounds; // [left, top, right, bottom]
+        var bounds = item.geometricBounds; // left, top, right, bottom
         var width = bounds[2] - bounds[0];
         var height = bounds[1] - bounds[3];
         
@@ -211,7 +255,7 @@ function calculateIntensity(col, row, cols, rows, params) {
         intensity = intensity + noiseAmount;
     }
     
-    // Clamp to [0, 1]
+    // Clamp to 0-1 range
     return Math.max(0, Math.min(1, intensity));
 }
 

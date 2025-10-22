@@ -263,9 +263,17 @@ switch (command) {
         console.log('  npm run plugin:reinstall   - Reinstall plugin (clean install)');
         console.log('  npm run plugin:status      - Check installation status');
         console.log('  npm run plugin:dev         - Install in development mode');
+        console.log('  npm run plugin:watch       - Auto-reinstall on file changes (for active development)');
+        console.log('');
+        console.log('Development workflow:');
+        console.log('  1. Run "npm run plugin:watch" in a terminal (keeps running)');
+        console.log('  2. Make changes to plugin files');
+        console.log('  3. Plugin auto-reinstalls when you save files');
+        console.log('  4. Reload/restart Illustrator panel to see changes');
         console.log('');
         console.log('After installation:');
         console.log('  1. Restart Adobe Illustrator');
         console.log('  2. Access via Window → Extensions → Halftone Generator');
+        console.log('  3. Debug via Chrome DevTools: http://localhost:8092');
         break;
 }
