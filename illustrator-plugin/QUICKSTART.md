@@ -5,61 +5,89 @@ This guide helps you get started quickly with the Halftone Generator Adobe Illus
 ## For Users (Testing the Plugin)
 
 ### Step 1: Check Prerequisites
-- Adobe Illustrator CC 2019 or later
+- Adobe Illustrator CC 2019 or later (tested with v27.5.0)
 - Windows 10/11 or macOS 10.12+
+- Node.js 12+ (for installation scripts)
 
 ### Step 2: Install the Plugin
 
-**Important**: Copy the folder, do NOT zip it!
+**Automated Installation (Recommended)**:
 
-**macOS**:
 ```bash
-# Copy plugin to CEP extensions folder (keep as folder structure)
-cp -r illustrator-plugin ~/Library/Application\ Support/Adobe/CEP/extensions/HalftoneGenerator
-
-# Enable debug mode
-defaults write com.adobe.CSXS.9 PlayerDebugMode 1
-
-# Restart Illustrator
+cd illustrator-plugin
+npm install              # Install dependencies
+npm run plugin:install   # Install plugin to Illustrator
 ```
 
-**Windows** (Run PowerShell as Administrator):
-```powershell
-# Copy plugin to CEP extensions folder (keep as folder structure)
-Copy-Item -Recurse illustrator-plugin $env:APPDATA\Adobe\CEP\extensions\HalftoneGenerator
+**What it does**:
+- ✅ Automatically finds your CEP extensions directory
+- ✅ Enables debug mode for unsigned extensions
+- ✅ Copies plugin files with correct structure
+- ✅ Shows installation status and next steps
 
-# Enable debug mode
-New-Item -Path "HKCU:\Software\Adobe\CSXS.9" -Force
-Set-ItemProperty -Path "HKCU:\Software\Adobe\CSXS.9" -Name "PlayerDebugMode" -Value "1"
+**Manual Installation** (if automated fails):
 
-# Restart Illustrator
-```
-
-**What's happening**:
-- The plugin folder is **copied** (not moved, not zipped) to Adobe's extensions directory
-- It's renamed to `HalftoneGenerator` (one word, no spaces)
-- Debug mode allows Illustrator to load unsigned extensions
-- The folder structure remains intact with all subfolders (CSXS/, client/, host/, etc.)
-
-**See INSTALLATION.md for detailed step-by-step instructions with screenshots and troubleshooting.**
+See [INSTALLATION.md](./INSTALLATION.md) for detailed manual installation instructions.
 
 ### Step 3: Use the Plugin
 
-1. **Open Illustrator** and create/open a document
-2. **Go to Window > Extensions > Halftone Generator**
-3. **Place an image** or create a shape
-4. **Select the object**
-5. **Adjust parameters** in the panel
-6. **Click "Generate Halftone"**
-7. **See the result** - a new layer with halftone pattern!
+1. **Restart Illustrator** (if it was open during installation)
+2. **Open or create a document**
+3. **Create a test shape**: Draw a rectangle or circle (any size)
+4. **Select your shape**
+5. **Open the plugin**: Window → Extensions → Halftone Generator
+6. **Adjust parameters** (or use defaults):
+   - Dot Size: 10
+   - Spacing: 15
+7. **Click "Generate Halftone"**
+8. **Check the result**:
+   - New layer appears: "Halftone Pattern"
+   - Grid of black circular dots covers the selected area
+   - Status message shows number of dots created
+
+### Current Version Features
+
+**What Works** ✅:
+- Basic circular dot patterns
+- Grid-based generation
+- Parameter control (Dot Size, Spacing)
+- New layer creation
+- Status messages with debug info
+
+**Coming Soon** 🚧:
+- Multiple pattern types (square, diamond, hexagon)
+- Image-based intensity (varying dot sizes)
+- More image processing effects
+
+### Tips for Best Results
+- Start with a medium-sized rectangle (200×200 pt or larger)
+- Use default settings first (Dot Size: 10, Spacing: 15)
+- Check Layers panel to see "Halftone Pattern" layer
+- You can delete and regenerate with different settings
+- Smaller spacing = more dots = longer generation time
+
+### Troubleshooting
+
+**Plugin doesn't appear in menu**:
+- Restart Illustrator
+- Check installation with: `npm run plugin:status`
+- See INSTALLATION.md for troubleshooting
+
+**"No object selected" error**:
+- Make sure you have a shape selected before clicking Generate
+
+**Blank layer created**:
+- Check status message for debug information
+- Report issue with Illustrator version
 
 ### Step 4: Report Issues
 
 Found a bug? Please report it on GitHub with:
-- Your Illustrator version
+- Your Illustrator version (shown in status message)
 - Operating system
-- Steps to reproduce
-- Screenshots if applicable
+- What you tried to do
+- What happened vs what you expected
+- Status message text
 
 See TESTING.md for the bug reporting template.
 
@@ -67,16 +95,26 @@ See TESTING.md for the bug reporting template.
 
 ## For Developers (Contributing to the Plugin)
 
-### Step 1: Clone Repository
+### Step 1: Setup Development Environment
 ```bash
 git clone https://github.com/ltpitt/Halftone-Generator.git
 cd Halftone-Generator/illustrator-plugin
+npm install
 ```
 
-### Step 2: Validate Structure
+### Step 2: Install Plugin in Development Mode
 ```bash
-npm run validate
+npm run plugin:dev    # One-time setup with debug tips
+# OR
+npm run plugin:watch  # Auto-reinstall on file changes (recommended)
 ```
+
+**Development Workflow with Watcher**:
+1. Run `npm run plugin:watch` in terminal (keeps running)
+2. Make changes to plugin files
+3. Save files
+4. Watcher automatically reinstalls plugin
+5. Reload or restart Illustrator panel to see changes
 
 Should output:
 ```

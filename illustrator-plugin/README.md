@@ -2,48 +2,64 @@
 
 ## Overview
 
-This directory contains the Adobe Illustrator plugin version of the Halftone Generator. The plugin brings the powerful halftone effects from the web application directly into Adobe Illustrator, allowing designers to create vector-based halftone patterns on their artwork.
+This directory contains the Adobe Illustrator plugin version of the Halftone Generator. The plugin creates vector-based halftone patterns directly in Adobe Illustrator, transforming selected objects into stylized dot patterns.
 
 ## Project Status
 
-**Current Phase**: Phase 1 Complete - Foundation and Setup ✅
+**Current Phase**: Phase 1 Complete - Basic Halftone Generation ✅
 
-**Status**: Ready for testing with Adobe Illustrator
+**Status**: Working plugin with basic functionality
 
-Phase 1 (Foundation and Setup) is complete with full plugin structure, UI, and basic halftone generation. The plugin can be installed and tested in Adobe Illustrator. See [MIGRATION_PLAN.md](./MIGRATION_PLAN.md) for the complete roadmap and next phases.
+### What's Working ✅
+- Plugin loads successfully in Illustrator
+- Environment detection (CEP vs browser demo mode)
+- UI panel with all pattern controls
+- Basic halftone generation (grid of circles)
+- Creates new layer with vector dots
+- Parameter passing from UI to ExtendScript
+- Error handling and status messages
 
-## Features (Implemented)
+### Next Steps 🚧
+- Enhance pattern generation (square, diamond, hexagon, etc.)
+- Implement actual image sampling
+- Add intensity-based dot sizing
+- Performance optimization
+- Testing and refinement
 
-The plugin implements all core features from the web application:
+See [MIGRATION_PLAN.md](./MIGRATION_PLAN.md) for the complete development roadmap.
 
-### Pattern Types ✅
-- ✅ Circular Dots
-- ✅ Square Dots
-- ✅ Diamond
-- ✅ Lines
-- ✅ Cross Hatch
-- ✅ Hexagon
+## Features
 
-### Controls ✅
+### Pattern Types (In Development)
+- ✅ Circular Dots (Basic implementation)
+- 🚧 Square Dots
+- 🚧 Diamond
+- 🚧 Lines
+- 🚧 Cross Hatch
+- 🚧 Hexagon
+
+### Controls (UI Complete)
 - **Dot Parameters**: Size, Spacing, Density
 - **Transformation**: Angle, Scale X, Scale Y
 - **Image Adjustments**: Contrast, Brightness, Gamma, Threshold
 - **Advanced Effects**: Blur, Noise, Invert
 
-### Current Implementation Status
+### Current Implementation
 - ✅ Full UI panel with all controls
-- ✅ Basic halftone generation with all 6 pattern types
-- ✅ Grid calculation with rotation support
-- ✅ Shape creation based on intensity
+- ✅ Basic circular dot pattern generation
+- ✅ Grid calculation based on spacing
+- ✅ New layer creation for halftone output
 - ✅ Error handling and user feedback
-- ⚠️ Image sampling uses placeholder algorithm (needs enhancement)
-- ⚠️ Icons are placeholders (need actual PNG icons)
+- 🚧 Image sampling (placeholder - uses simple gradient)
+- 🚧 Multiple pattern types
+- 🚧 Intensity-based dot sizing
 
 ### Key Differences from Web Version
 - Output is **vector shapes** (paths) instead of raster canvas
-- Works with selected Illustrator objects (raster images or vectors)
+- Works with selected Illustrator objects
 - Integrates with Illustrator's undo/redo system
 - Creates editable vector patterns in the document
+- No real-time preview (generates on button click)
 
 ## Technical Architecture
 
@@ -80,16 +96,16 @@ The plugin includes a **Demo Mode** that runs in any web browser, enabling:
 - ✅ Full UI testing and interaction
 - ✅ Image loading and halftone generation
 - ✅ Real-time parameter adjustments with canvas preview
-- ✅ All pattern types and effects
+- ✅ Pattern types visualization
 - ✅ Complete feature exploration
 
 ### Quick Demo
 
 ```bash
-# Open demo mode in browser
-open client/index.html
+# Serve with npm script (recommended)
+npm run serve
 
-# Or serve with local server (recommended)
+# Or manually
 cd client
 python3 -m http.server 8000
 # Visit: http://localhost:8000
@@ -98,10 +114,12 @@ python3 -m http.server 8000
 **Instant Preview**: Demo mode automatically loads an example image so you can immediately see halftone effects and experiment with all parameters!
 
 **Demo vs Production**:
-- **Demo Mode**: Canvas-based preview, image file upload, browser testing
-- **Production Mode**: Vector shape creation, Illustrator object selection, full plugin functionality
+- **Demo Mode**: Canvas-based raster preview, image file upload, browser testing
+- **Production Mode**: Vector shape creation in Illustrator, works with selected objects
 
-This enables extensive development and testing without requiring Adobe Illustrator installation.
+This enables UI development and testing without requiring Adobe Illustrator installation.
+
+**Note**: The demo mode shows the full feature set, but the Illustrator plugin currently implements basic circular patterns. Additional patterns will be added in future updates.
 
 ## Getting Started
 
@@ -136,16 +154,41 @@ npm run validate  # Validate plugin structure
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed development guidelines.
 
-## Usage (Ready for Testing)
+## Usage
 
-1. Install the plugin (see [INSTALLATION.md](./INSTALLATION.md))
-2. Open Adobe Illustrator
-3. Launch plugin from Window > Extensions > Halftone Generator
-4. Select an object in your document (image or vector)
-5. Adjust halftone parameters in the panel
-6. Click "Generate" to create vector halftone effect
+### Basic Usage
 
-**Quick Start**: See [QUICKSTART.md](./QUICKSTART.md) for a quick guide.
+1. **Install the plugin** (see [INSTALLATION.md](./INSTALLATION.md))
+2. **Open Adobe Illustrator**
+3. **Launch plugin**: Window → Extensions → Halftone Generator
+4. **Select an object** in your document (any shape or image)
+5. **Adjust parameters**:
+   - Dot Size: Size of individual dots
+   - Spacing: Distance between dots
+   - Other parameters (currently affect demo mode only)
+6. **Click "Generate"** to create halftone pattern
+
+### What to Expect
+
+**Current Version (v1.0 - Basic Implementation)**:
+- ✅ Creates a new layer called "Halftone Pattern"
+- ✅ Generates a grid of circular black dots
+- ✅ Grid size based on selected object's bounds
+- ✅ Spacing controlled by "Spacing" parameter
+- ✅ Dot size controlled by "Dot Size" parameter
+- 🚧 Other pattern types coming soon
+- 🚧 Image-based intensity coming soon
+
+**Status Message**: The plugin shows detailed information about what was created, including number of dots and grid dimensions.
+
+### Tips
+- Start with default parameters (Dot Size: 10, Spacing: 15)
+- Use smaller spacing for finer patterns
+- Select larger objects to see more dots
+- The halftone layer is created separately from your original object
+- You can delete the halftone layer and regenerate with different settings
+
+**Quick Start**: See [QUICKSTART.md](./QUICKSTART.md) for step-by-step guide with screenshots.
 
 ## Relationship to Web Application
 
@@ -156,6 +199,8 @@ This plugin is a **separate, independent project** that recreates the web applic
 - Adapted for Illustrator workflow
 - Vector output instead of raster
 - Professional design tool integration
+
+**Development Status**: The plugin is in active development. Current version provides basic functionality with more features being added incrementally.
 
 ## Documentation
 

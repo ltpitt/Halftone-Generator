@@ -20,6 +20,7 @@ A professional plugin for creating vector halftone effects in Adobe Illustrator
 - **Type**: Adobe CEP (Common Extensibility Platform) plugin
 - **Usage**: Install as an Illustrator extension
 - **Features**: Vector-based halftone patterns with full Illustrator integration
+- **Status**: ✅ Working (v1.0 - Basic circular patterns, more features in development)
 - [View Plugin Documentation →](./illustrator-plugin/README.md)
 
 ## 🚀 Quick Start
@@ -34,9 +35,10 @@ open web-app/index.html
 ```bash
 cd illustrator-plugin
 npm install
-npm test
+npm run plugin:install  # Automated installation
+# Restart Illustrator, then go to Window → Extensions → Halftone Generator
 ```
-See the [Illustrator Plugin README](./illustrator-plugin/README.md) for installation instructions.
+See the [Illustrator Plugin README](./illustrator-plugin/README.md) for detailed instructions.
 
 ## ✨ Features
 

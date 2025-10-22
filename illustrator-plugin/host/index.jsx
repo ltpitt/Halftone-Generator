@@ -40,6 +40,10 @@ function generateHalftone(paramsJSON) {
         var width = bounds[2] - bounds[0];
         var height = bounds[1] - bounds[3];
         
+        // Debug: Log values
+        var debugInfo = 'Bounds: [' + bounds[0] + ', ' + bounds[1] + ', ' + bounds[2] + ', ' + bounds[3] + '] ';
+        debugInfo += 'Size: ' + width + 'x' + height + ' ';
+        
         // Create a new layer for halftone
         var halftoneLayer = doc.layers.add();
         halftoneLayer.name = "Halftone Pattern";
@@ -51,6 +55,14 @@ function generateHalftone(paramsJSON) {
         var rows = Math.floor(height / spacing);
         var shapesCreated = 0;
         
+        debugInfo += 'Grid: ' + cols + 'x' + rows + ' Spacing: ' + spacing + ' DotSize: ' + dotSize;
+        
+        // Create black color for dots
+        var blackColor = new RGBColor();
+        blackColor.red = 0;
+        blackColor.green = 0;
+        blackColor.blue = 0;
+        
         // Create halftone dots
         for (var row = 0; row < rows; row++) {
             for (var col = 0; col < cols; col++) {
@@ -60,15 +72,15 @@ function generateHalftone(paramsJSON) {
                 // Create a circle
                 var circle = halftoneLayer.pathItems.ellipse(y + dotSize/2, x - dotSize/2, dotSize, dotSize);
                 circle.filled = true;
-                circle.fillColor = doc.swatches[2].color; // Black
+                circle.fillColor = blackColor;
                 circle.stroked = false;
                 
                 shapesCreated++;
             }
         }
         
-        // Return success with parameters received
-        return '{"success":true,"message":"Created ' + shapesCreated + ' halftone dots (' + cols + 'x' + rows + ' grid)"}';
+        // Return success with debug info
+        return '{"success":true,"message":"Created ' + shapesCreated + ' halftone dots. ' + debugInfo + '"}';
         
         // Check if there's an active document
         if (app.documents.length === 0) {
