@@ -12,16 +12,46 @@
     let halftoneCtx = null;
     let updateTimeout = null;
 
-    // Try to initialize CEP interface
-    try {
-        csInterface = new CSInterface();
-        // Test if CSInterface is working
-        csInterface.getOSInformation();
-        isIllustratorMode = true;
-    } catch (e) {
-        console.log('CSInterface not available - running in demo mode');
-        isIllustratorMode = false;
+    // Enhanced environment detection
+    function detectEnvironment() {
+        // Method 1: Check if we're in a CEP environment by looking for CSInterface
+        if (typeof CSInterface === 'undefined') {
+            console.log('CSInterface class not available - running in demo mode');
+            return false;
+        }
+
+        // Method 2: Try to create and test CSInterface
+        try {
+            csInterface = new CSInterface();
+            
+            // Method 3: Test if CSInterface methods are actually working
+            const appName = csInterface.hostEnvironment && csInterface.hostEnvironment.appName;
+            const osInfo = csInterface.getOSInformation();
+            
+            if (appName || osInfo) {
+                console.log('CEP environment detected:', appName || 'Unknown Adobe app');
+                return true;
+            } else {
+                console.log('CSInterface exists but not functional - running in demo mode');
+                return false;
+            }
+        } catch (e) {
+            console.log('CSInterface initialization failed - running in demo mode:', e.message);
+            return false;
+        }
     }
+
+    // Method 4: Also check for CEP-specific window properties
+    function isCEPEnvironment() {
+        return (window.__adobe_cep__ || 
+                window.cep || 
+                window.CSInterface || 
+                navigator.userAgent.indexOf('CEF') !== -1);
+    }
+
+    // Detect environment with multiple methods
+    isIllustratorMode = detectEnvironment() && isCEPEnvironment();
+    console.log('Environment detection result:', isIllustratorMode ? 'Illustrator CEP Mode' : 'Browser Demo Mode');
 
     // Get all UI elements
     const elements = {
@@ -123,13 +153,34 @@
     
     // Setup UI based on current mode
     function setupModeUI() {
+        console.log('Setting up UI for mode:', isIllustratorMode ? 'Illustrator CEP' : 'Browser Demo');
+        
+        // Debug: Log environment information
+        console.log('Debug Info:', {
+            'CSInterface available': typeof CSInterface !== 'undefined',
+            'csInterface instance': !!csInterface,
+            'User Agent': navigator.userAgent,
+            'Window location': window.location.href,
+            'CEP properties': {
+                '__adobe_cep__': !!window.__adobe_cep__,
+                'window.cep': !!window.cep,
+                'CEF in userAgent': navigator.userAgent.indexOf('CEF') !== -1
+            }
+        });
+
         if (isIllustratorMode) {
+            console.log('✅ Illustrator CEP mode - hiding demo elements');
             // Hide mode indicator entirely for professional Illustrator users
             elements.modeIndicator.style.display = 'none';
             // Hide demo-only elements
             elements.demoFileSection.style.display = 'none';
             elements.demoCanvasSection.style.display = 'none';
+            
+            // Show CEP-specific status
+            elements.status.textContent = 'Ready to generate halftone patterns in Illustrator';
+            elements.status.className = 'status-message success';
         } else {
+            console.log('🌐 Browser demo mode - showing demo elements');
             // Demo mode can mention it's a demo since it's browser-based
             elements.modeText.textContent = 'Demo Mode - Try the live preview!';
             elements.modeIndicator.className = 'mode-indicator demo-mode';
@@ -137,6 +188,12 @@
             // Show demo-only elements
             elements.demoFileSection.style.display = 'block';
             elements.demoCanvasSection.style.display = 'block';
+            
+            // Initialize canvas for demo mode
+            initializeCanvas();
+            
+            // Auto-load example image in demo mode
+            loadExampleImage();
         }
     }
     
