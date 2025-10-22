@@ -19,7 +19,7 @@ module.exports = defineConfig({
   
   // Reporter configuration
   reporter: [
-    ['html', { outputFolder: 'test-results/html-report' }],
+    ['html', { outputFolder: 'playwright-report' }],
     ['list'],
     ['json', { outputFile: 'test-results/results.json' }]
   ],
@@ -47,7 +47,7 @@ module.exports = defineConfig({
 
   // Web server configuration
   webServer: {
-    command: 'cd client && python3 -m http.server 8765',
+    command: 'npx http-server client -p 8765 --cors',
     port: 8765,
     timeout: 120 * 1000,
     reuseExistingServer: !process.env.CI,
