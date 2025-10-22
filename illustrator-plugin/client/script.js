@@ -15,6 +15,7 @@ console.log('🔍 Script loading started...');
     let halftoneCanvas = null;
     let halftoneCtx = null;
     let updateTimeout = null;
+    let originalArtworkBounds = null; // Store original artwork position and size
 
     // Enhanced environment detection
     function detectEnvironment() {
@@ -112,6 +113,7 @@ console.log('🔍 Script loading started...');
         // Buttons
         generateBtn: document.getElementById('generateBtn'),
         resetBtn: document.getElementById('resetBtn'),
+        captureBtn: document.getElementById('captureBtn'),
         
         // Status
         status: document.getElementById('status'),
@@ -123,7 +125,9 @@ console.log('🔍 Script loading started...');
         modeIndicator: document.getElementById('modeIndicator'),
         modeText: document.getElementById('modeText'),
         canvasOverlay: document.getElementById('canvasOverlay'),
-        outputInfo: document.getElementById('outputInfo')
+        overlayMessage: document.getElementById('overlayMessage'),
+        outputInfo: document.getElementById('outputInfo'),
+        previewSection: document.getElementById('previewSection')
     };
 
     // Default parameter values
@@ -157,10 +161,11 @@ console.log('🔍 Script loading started...');
         // Update initial values
         updateAllValueDisplays();
         
-        // Initialize canvas if in demo mode
+        // Initialize canvas (for both modes now)
+        initializeCanvas();
+        
+        // In demo mode, auto-load example image
         if (!isIllustratorMode) {
-            initializeCanvas();
-            // Auto-load example image in demo mode
             loadExampleImage();
         }
         
@@ -185,19 +190,21 @@ console.log('🔍 Script loading started...');
         });
 
         if (isIllustratorMode) {
-            console.log('✅ Illustrator CEP mode - hiding demo elements');
+            console.log('✅ Illustrator CEP mode - showing preview section');
             // Hide mode indicator entirely for professional Illustrator users
             elements.modeIndicator.style.display = 'none';
             // Hide demo-only elements
             elements.demoFileSection.style.display = 'none';
             elements.demoCanvasSection.style.display = 'none';
+            // Show preview section
+            elements.previewSection.style.display = 'block';
             
             // Show CEP-specific status with debug info
             let debugInfo = '';
             if (csInterface && csInterface.hostEnvironment) {
                 debugInfo = ` (${csInterface.hostEnvironment.appName} v${csInterface.hostEnvironment.appVersion})`;
             }
-            elements.status.textContent = 'Ready to generate halftone patterns in Illustrator' + debugInfo;
+            elements.status.textContent = 'Ready - Select artwork and click "Capture" to preview' + debugInfo;
             elements.status.className = 'status-message success';
         } else {
             console.log('🌐 Browser demo mode - showing demo elements');
@@ -208,6 +215,8 @@ console.log('🔍 Script loading started...');
             // Show demo-only elements
             elements.demoFileSection.style.display = 'block';
             elements.demoCanvasSection.style.display = 'block';
+            // Hide preview section (use demoCanvasSection instead)
+            elements.previewSection.style.display = 'none';
             
             // Initialize canvas for demo mode
             initializeCanvas();
@@ -247,8 +256,8 @@ console.log('🔍 Script loading started...');
         sliders.forEach(function(slider) {
             slider.element.addEventListener('input', function() {
                 updateValueDisplay(slider.element, slider.display, slider.suffix);
-                // Real-time preview in demo mode with debouncing
-                if (!isIllustratorMode && currentImage) {
+                // Real-time preview with debouncing (works in both modes if image is loaded)
+                if (currentImage) {
                     clearTimeout(updateTimeout);
                     updateTimeout = setTimeout(function() {
                         generateHalftoneCanvas(getCurrentParameters());
@@ -263,31 +272,34 @@ console.log('🔍 Script loading started...');
         // Reset button
         elements.resetBtn.addEventListener('click', resetToDefaults);
         
+        // Capture button (Illustrator mode)
+        if (isIllustratorMode && elements.captureBtn) {
+            elements.captureBtn.addEventListener('click', captureArtwork);
+        }
+        
         // Demo mode file input
         if (!isIllustratorMode && elements.imageInput) {
             elements.imageInput.addEventListener('change', handleFileSelect);
         }
         
-        // Real-time preview for pattern changes (demo mode only)
-        if (!isIllustratorMode) {
-            elements.patternRadios.forEach(function(radio) {
-                radio.addEventListener('change', function() {
-                    if (currentImage) {
-                        clearTimeout(updateTimeout); // Cancel any pending slider updates
-                        generateHalftoneCanvas(getCurrentParameters());
-                    }
-                });
+        // Real-time preview for pattern changes
+        elements.patternRadios.forEach(function(radio) {
+            radio.addEventListener('change', function() {
+                if (currentImage) {
+                    clearTimeout(updateTimeout); // Cancel any pending slider updates
+                    generateHalftoneCanvas(getCurrentParameters());
+                }
             });
-            
-            // Real-time preview for invert checkbox
-            if (elements.invert) {
-                elements.invert.addEventListener('change', function() {
-                    if (currentImage) {
-                        clearTimeout(updateTimeout); // Cancel any pending slider updates
-                        generateHalftoneCanvas(getCurrentParameters());
-                    }
-                });
-            }
+        });
+        
+        // Real-time preview for invert checkbox
+        if (elements.invert) {
+            elements.invert.addEventListener('change', function() {
+                if (currentImage) {
+                    clearTimeout(updateTimeout); // Cancel any pending slider updates
+                    generateHalftoneCanvas(getCurrentParameters());
+                }
+            });
         }
 
         // Listen for progress events from ExtendScript (Illustrator mode only)
@@ -364,6 +376,88 @@ console.log('🔍 Script loading started...');
         elements.status.style.display = 'none';
     }
 
+    // Capture artwork from Illustrator (CEP mode only)
+    function captureArtwork() {
+        if (!isIllustratorMode || !csInterface) {
+            showStatus('Capture only works in Illustrator mode', 'error');
+            return;
+        }
+        
+        console.log('Capturing artwork from Illustrator...');
+        showStatus('Capturing selected artwork...', 'info');
+        
+        elements.captureBtn.disabled = true;
+        elements.captureBtn.textContent = 'Capturing...';
+        
+        csInterface.evalScript('captureArtworkForPreview()', function(result) {
+            elements.captureBtn.disabled = false;
+            elements.captureBtn.textContent = 'Capture Selected Artwork';
+            
+            console.log('Capture result:', result);
+            
+            if (!result || result === 'EvalScript error.') {
+                showStatus('Failed to capture artwork - ExtendScript error', 'error');
+                return;
+            }
+            
+            try {
+                const data = JSON.parse(result);
+                
+                if (data.success && data.imagePath) {
+                    console.log('Image path:', data.imagePath);
+                    
+                    // Store original artwork bounds for later use
+                    originalArtworkBounds = {
+                        left: data.left,
+                        top: data.top,
+                        width: data.width,
+                        height: data.height
+                    };
+                    console.log('Stored original bounds:', originalArtworkBounds);
+                    
+                    // Load the captured image from file path
+                    const img = new Image();
+                    img.onload = function() {
+                        currentImage = img;
+                        setupCanvas(img);
+                        if (elements.outputInfo) {
+                            elements.outputInfo.textContent = data.width + ' × ' + data.height + 'px';
+                        }
+                        
+                        // Generate initial preview
+                        generateHalftoneCanvas(getCurrentParameters());
+                        
+                        // Hide overlay
+                        if (elements.canvasOverlay) {
+                            elements.canvasOverlay.style.display = 'none';
+                        }
+                        
+                        showStatus('✅ Artwork captured! Adjust parameters to see live preview', 'success');
+                        console.log('Artwork loaded successfully:', img.width + 'x' + img.height);
+                    };
+                    
+                    img.onerror = function(e) {
+                        console.error('Image load error:', e);
+                        showStatus('Failed to load captured image from: ' + data.imagePath, 'error');
+                    };
+                    
+                    // Set crossOrigin before src to avoid CORS issues
+                    img.crossOrigin = 'anonymous';
+                    img.src = data.imagePath;
+                    
+                } else {
+                    showStatus('❌ ' + (data.error || 'Failed to capture artwork'), 'error');
+                    console.error('Capture failed:', data.error);
+                }
+                
+            } catch (e) {
+                console.error('Parse error:', e);
+                console.error('Raw result:', result);
+                showStatus('Error parsing capture result: ' + e.message, 'error');
+            }
+        });
+    }
+
     // Generate halftone
     function generateHalftone() {
         console.log('Generate button clicked');
@@ -379,7 +473,39 @@ console.log('🔍 Script loading started...');
         console.log('Parameters:', params);
 
         if (isIllustratorMode) {
-            // Illustrator mode - call ExtendScript
+            // Check if we have a captured image to extract brightness data from
+            if (!currentImage || !halftoneCanvas || !halftoneCtx) {
+                showStatus('❌ Please capture artwork first to generate halftone', 'error');
+                elements.generateBtn.disabled = false;
+                elements.generateBtn.textContent = 'Generate Halftone';
+                return;
+            }
+            
+            // Extract brightness map from the canvas
+            const brightnessData = extractBrightnessMapFromCanvas(params);
+            
+            // Add brightness data to params
+            params.brightnessMap = brightnessData.map;
+            params.gridCols = brightnessData.cols;
+            params.gridRows = brightnessData.rows;
+            
+            // Add original artwork bounds for precise positioning
+            if (originalArtworkBounds) {
+                params.originalBounds = originalArtworkBounds;
+                console.log('Adding original bounds to params:', originalArtworkBounds);
+            } else {
+                console.warn('No original bounds available - artwork may not align correctly');
+            }
+            
+            console.log('Sending params to ExtendScript:', {
+                pattern: params.pattern,
+                gridSize: brightnessData.cols + 'x' + brightnessData.rows,
+                hasBounds: !!params.originalBounds,
+                dotSize: params.dotSize,
+                spacing: params.spacing
+            });
+            
+            // Illustrator mode - call ExtendScript with brightness data
             const paramsJSON = JSON.stringify(params);
             
             // IMPORTANT: Escape the JSON string properly for ExtendScript
@@ -388,10 +514,12 @@ console.log('🔍 Script loading started...');
             const script = "generateHalftone('" + escapedJSON + "')";
             
             // Show diagnostic info
-            showStatus('Calling generateHalftone...', 'info');
+            showStatus('Generating ' + (brightnessData.cols * brightnessData.rows) + ' halftone dots...', 'info');
             
             csInterface.evalScript(script, function(result) {
                 console.log('ExtendScript result:', result);
+                console.log('Result type:', typeof result);
+                console.log('Result length:', result ? result.length : 0);
                 
                 // Re-enable button
                 elements.generateBtn.disabled = false;
@@ -399,26 +527,30 @@ console.log('🔍 Script loading started...');
                 
                 if (result === 'EvalScript error.') {
                     showStatus('Error: ExtendScript execution failed - function not found or syntax error', 'error');
+                    console.error('ExtendScript error - function may not exist');
                     return;
                 }
                 
                 if (!result || result.trim() === '') {
                     showStatus('Error: ExtendScript returned empty result', 'error');
+                    console.error('Empty result from ExtendScript');
                     return;
                 }
                 
                 try {
                     const resultData = JSON.parse(result);
+                    console.log('Parsed result:', resultData);
                     
                     if (resultData.success) {
-                        showStatus('Success: ' + (resultData.message || 'Halftone generated'), 'success');
+                        showStatus('✅ ' + (resultData.message || 'Halftone generated successfully! Original artwork hidden.'), 'success');
                     } else {
-                        showStatus('Error: ' + resultData.error, 'error');
+                        showStatus('❌ ' + resultData.error, 'error');
+                        console.error('ExtendScript error:', resultData.error);
                     }
                 } catch (e) {
                     console.error('JSON Parse Error:', e);
                     console.error('Raw result:', result);
-                    showStatus('Parse Error: ' + e.message, 'error');
+                    showStatus('Parse Error: ' + e.message + ' - Result: ' + result.substring(0, 100), 'error');
                 }
             });
         } else {
@@ -565,6 +697,83 @@ console.log('🔍 Script loading started...');
         if (elements.outputInfo) {
             elements.outputInfo.textContent = `${img.width} × ${img.height}px`;
         }
+    }
+    
+    // Extract brightness map from canvas to send to ExtendScript
+    function extractBrightnessMapFromCanvas(params) {
+        if (!halftoneCanvas || !halftoneCtx || !currentImage) {
+            return { map: [[0.5]], cols: 1, rows: 1 };
+        }
+        
+        // Create temporary canvas for image processing
+        const tempCanvas = document.createElement('canvas');
+        const tempCtx = tempCanvas.getContext('2d');
+        tempCanvas.width = halftoneCanvas.width;
+        tempCanvas.height = halftoneCanvas.height;
+        
+        // Apply image adjustments
+        tempCtx.filter = `contrast(${params.contrast * 100}%) brightness(${100 + params.brightness}%) blur(${params.blur}px)`;
+        tempCtx.drawImage(currentImage, 0, 0, tempCanvas.width, tempCanvas.height);
+        
+        // Get image data
+        const imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
+        const data = imageData.data;
+        
+        // Apply gamma correction
+        if (params.gamma !== 1) {
+            for (let i = 0; i < data.length; i += 4) {
+                data[i] = Math.pow(data[i] / 255, params.gamma) * 255;     // Red
+                data[i + 1] = Math.pow(data[i + 1] / 255, params.gamma) * 255; // Green
+                data[i + 2] = Math.pow(data[i + 2] / 255, params.gamma) * 255; // Blue
+            }
+        }
+        
+        // Calculate grid
+        const dotSpacing = params.dotSize * params.spacing;
+        const cols = Math.floor(tempCanvas.width / dotSpacing);
+        const rows = Math.floor(tempCanvas.height / dotSpacing);
+        
+        // Sample brightness at each grid position
+        const brightnessMap = [];
+        for (let row = 0; row < rows; row++) {
+            brightnessMap[row] = [];
+            for (let col = 0; col < cols; col++) {
+                const x = Math.floor(col * dotSpacing + dotSpacing / 2);
+                const y = Math.floor(row * dotSpacing + dotSpacing / 2);
+                
+                // Get pixel brightness at this position
+                const pixelIndex = (y * tempCanvas.width + x) * 4;
+                if (pixelIndex >= data.length) {
+                    brightnessMap[row][col] = 0.5;
+                    continue;
+                }
+                
+                const r = data[pixelIndex];
+                const g = data[pixelIndex + 1];
+                const b = data[pixelIndex + 2];
+                const gray = (r + g + b) / 3;
+                
+                // Apply threshold
+                let intensity = gray > params.threshold ? gray : 0;
+                
+                // Add noise if specified
+                if (params.noise > 0) {
+                    intensity += (Math.random() - 0.5) * params.noise * 2.55;
+                    intensity = Math.max(0, Math.min(255, intensity));
+                }
+                
+                // Normalize to 0-1
+                brightnessMap[row][col] = intensity / 255;
+            }
+        }
+        
+        console.log(`Extracted brightness map: ${cols}x${rows} grid`);
+        
+        return {
+            map: brightnessMap,
+            cols: cols,
+            rows: rows
+        };
     }
     
     // Generate halftone on canvas (demo mode)

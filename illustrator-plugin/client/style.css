@@ -46,12 +46,36 @@ body {
     padding: 15px;
 }
 
+/* Two Column Layout */
+.two-column-layout {
+    display: flex;
+    gap: 15px;
+    align-items: flex-start;
+}
+
+.parameters-column {
+    flex: 0 0 55%;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.preview-column {
+    flex: 0 0 calc(45% - 15px);
+    position: sticky;
+    top: 0;
+}
+
 /* Control Sections */
 .control-section {
-    margin-bottom: 20px;
+    margin-bottom: 0;
     background-color: #3A3A3A;
     padding: 12px;
     border-radius: 4px;
+}
+
+.parameters-column .control-section {
+    margin-bottom: 0;
 }
 
 .control-section h2 {
@@ -191,6 +215,8 @@ input[type="range"]::-moz-range-thumb:hover {
     display: flex;
     flex-direction: column;
     gap: 8px;
+    clear: both;
+    width: 100%;
 }
 
 .btn {
@@ -344,7 +370,16 @@ input[type="range"]::-moz-range-thumb:hover {
     border-radius: 3px;
     background-color: #1A1A1A;
     max-width: 100%;
+    width: 100%;
     height: auto;
+}
+
+/* Make preview canvas fit nicely in the right column */
+.preview-column #halftoneCanvas {
+    width: 100%;
+    height: auto;
+    max-height: 400px;
+    object-fit: contain;
 }
 
 .canvas-overlay {
@@ -386,4 +421,33 @@ input[type="range"]::-moz-range-thumb:hover {
 
 ::-webkit-scrollbar-thumb:hover {
     background: #5A5A5A;
+}
+
+/* Responsive Layout - Stack columns on narrow panels */
+@media (max-width: 500px) {
+    .two-column-layout {
+        flex-direction: column;
+    }
+    
+    .parameters-column,
+    .preview-column {
+        flex: 1 1 100%;
+        width: 100%;
+        position: static;
+    }
+    
+    .parameters-column .pattern-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* Improve Pattern Grid in Left Column */
+.parameters-column .pattern-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+}
+
+.parameters-column .pattern-option {
+    padding: 6px;
+    font-size: 10px;
 }

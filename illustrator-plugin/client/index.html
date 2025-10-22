@@ -15,8 +15,12 @@
         </header>
 
         <div class="panel-content">
-            <!-- Pattern Type Selection -->
-            <section class="control-section">
+            <!-- Two Column Layout -->
+            <div class="two-column-layout">
+                <!-- Left Column: Parameters -->
+                <div class="parameters-column">
+                    <!-- Pattern Type Selection -->
+                    <section class="control-section">
                 <h2>Pattern Type</h2>
                 <div class="pattern-grid">
                     <label class="pattern-option">
@@ -140,9 +144,48 @@
                     <label class="checkbox-label">
                         <input type="checkbox" id="invert">
                         <span>Invert</span>
-                    </label>
+                        </label>
+                    </div>
+                </section>
                 </div>
-            </section>
+                <!-- End Left Column -->
+
+                <!-- Right Column: Preview -->
+                <div class="preview-column">
+                    <!-- Preview Canvas (Illustrator Mode) -->
+                    <section id="previewSection" class="control-section">
+                        <h2>Preview</h2>
+                        <div class="canvas-container">
+                            <canvas id="halftoneCanvas" width="300" height="300"></canvas>
+                            <div id="canvasOverlay" class="canvas-overlay">
+                                <p id="overlayMessage">Select artwork in Illustrator and adjust parameters to see preview</p>
+                            </div>
+                        </div>
+                        <div class="canvas-info">
+                            <span id="outputInfo">No preview</span>
+                        </div>
+                        <button id="captureBtn" class="btn btn-secondary" style="width: 100%; margin-top: 8px;">
+                            Capture Selected Artwork
+                        </button>
+                    </section>
+
+                    <!-- Canvas Preview (Demo Mode) -->
+                    <section id="demoCanvasSection" class="control-section demo-only" style="display: none;">
+                        <h2>Preview</h2>
+                        <div class="canvas-container">
+                            <canvas id="demoCanvas" width="300" height="300"></canvas>
+                            <div id="demoCanvasOverlay" class="canvas-overlay">
+                                <p>Loading example image...</p>
+                            </div>
+                        </div>
+                        <div class="canvas-info">
+                            <span id="demoOutputInfo">No image loaded</span>
+                        </div>
+                    </section>
+                </div>
+                <!-- End Right Column -->
+            </div>
+            <!-- End Two Column Layout -->
 
             <!-- Demo Mode File Upload (Browser Only) -->
             <section id="demoFileSection" class="control-section demo-only" style="display: none;">
@@ -150,25 +193,8 @@
                 <div class="control-group">
                     <input type="file" id="imageInput" accept="image/*" class="file-input">
                     <label for="imageInput" class="file-label">Choose Image File</label>
-
                 </div>
-            </section>
-
-            <!-- Canvas Preview (Demo Mode) -->
-            <section id="demoCanvasSection" class="control-section demo-only" style="display: none;">
-                <h2>Preview</h2>
-                <div class="canvas-container">
-                    <canvas id="halftoneCanvas" width="300" height="300"></canvas>
-                    <div id="canvasOverlay" class="canvas-overlay">
-                        <p>Loading example image...</p>
-                    </div>
-                </div>
-                <div class="canvas-info">
-                    <span id="outputInfo">No image loaded</span>
-                </div>
-            </section>
-
-            <!-- Mode Indicator -->
+            </section>            <!-- Mode Indicator -->
             <div id="modeIndicator" class="mode-indicator">
                 <span id="modeText">Detecting environment...</span>
             </div>

@@ -41,16 +41,16 @@
           <Menu>Halftone Generator</Menu>
           <Geometry>
             <Size>
-              <Height>600</Height>
-              <Width>320</Width>
+              <Height>700</Height>
+              <Width>600</Width>
             </Size>
             <MinSize>
               <Height>400</Height>
-              <Width>280</Width>
+              <Width>500</Width>
             </MinSize>
             <MaxSize>
-              <Height>800</Height>
-              <Width>400</Width>
+              <Height>1000</Height>
+              <Width>900</Width>
             </MaxSize>
           </Geometry>
           <Icons>
