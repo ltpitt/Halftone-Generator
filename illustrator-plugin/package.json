@@ -15,7 +15,15 @@
     "test:e2e:headed": "npx playwright test --headed",
     "test:e2e:report": "npx playwright show-report test-results/html-report",
     "serve": "npx http-server client -p 8000 --cors",
-    "serve:demo": "npm run serve"
+    "serve:demo": "npm run serve",
+    "plugin:install": "node scripts/plugin-manager.js install",
+    "plugin:uninstall": "node scripts/plugin-manager.js uninstall",
+    "plugin:reinstall": "node scripts/plugin-manager.js reinstall",
+    "plugin:status": "node scripts/plugin-manager.js status",
+    "plugin:dev": "node scripts/plugin-manager.js dev",
+    "plugin:watch": "node scripts/dev-watcher.js",
+    "plugin:setup": "npm run plugin:install && echo '\n🎉 Setup complete! Restart Illustrator and check Window → Extensions → Halftone Generator'",
+    "plugin:help": "node scripts/plugin-manager.js"
   },
   "keywords": [
     "adobe",
